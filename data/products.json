@@ -1,0 +1,394 @@
+{
+  "🧠 底层大模型": {
+    "icon": "🧠",
+    "desc": "Foundation Models — 负责理解和推理，是所有产品的大脑",
+    "products": [
+      {
+        "name": "Claude",
+        "company": "Anthropic",
+        "tier": "S",
+        "score": 98,
+        "features": ["推理👑", "写作👑", "代码👑", "Computer Use"],
+        "keywords": ["claude", "anthropic", "claude 3", "claude 4", "claude sonnet", "claude opus"]
+      },
+      {
+        "name": "GPT-5 系列",
+        "company": "OpenAI",
+        "tier": "S",
+        "score": 97,
+        "features": ["执行👑", "生态👑", "多模态", "联网内置"],
+        "keywords": ["gpt-5", "gpt-4", "openai model", "o3", "o4"]
+      },
+      {
+        "name": "Qwen 3.x",
+        "company": "阿里",
+        "tier": "S",
+        "score": 90,
+        "features": ["中文👑", "最便宜", "开源可本地"],
+        "keywords": ["qwen", "qwen3", "通义千问", "alibaba model"]
+      },
+      {
+        "name": "DeepSeek V4",
+        "company": "深度求索",
+        "tier": "A",
+        "score": 88,
+        "features": ["性价比👑", "GPT 1/34 成本", "R1 推理强"],
+        "keywords": ["deepseek", "deep seek", "deepseek v3", "deepseek r1"]
+      },
+      {
+        "name": "Gemini 2.x",
+        "company": "Google",
+        "tier": "A",
+        "score": 87,
+        "features": ["Google 生态", "多模态", "长上下文 100 万"],
+        "keywords": ["gemini", "google gemini", "gemini 2", "google ai"]
+      },
+      {
+        "name": "Llama 4",
+        "company": "Meta",
+        "tier": "A",
+        "score": 83,
+        "features": ["完全开源", "可本地部署", "免费使用"],
+        "keywords": ["llama", "llama 4", "meta ai", "meta llama"]
+      }
+    ]
+  },
+  "💬 对话产品": {
+    "icon": "💬",
+    "desc": "Chat Apps — 把大模型包装成普通人能用的对话界面",
+    "products": [
+      {
+        "name": "Cowork",
+        "company": "Anthropic · 桌面 App",
+        "tier": "S",
+        "score": 96,
+        "features": ["本地文件读写", "MCP 工具接入", "联网搜索", "你在用 ✓"],
+        "keywords": ["cowork", "claude desktop", "claude app"]
+      },
+      {
+        "name": "Claude.ai",
+        "company": "Anthropic · 网页版",
+        "tier": "S",
+        "score": 94,
+        "features": ["Projects 跨会话记忆", "Computer Use", "免费/Pro"],
+        "keywords": ["claude.ai", "claude web"]
+      },
+      {
+        "name": "ChatGPT",
+        "company": "OpenAI · 网页/App",
+        "tier": "S",
+        "score": 95,
+        "features": ["用户最多", "GPT 商店插件", "语音/图像内置"],
+        "keywords": ["chatgpt", "openai chat", "gpt chat"]
+      },
+      {
+        "name": "通义",
+        "company": "阿里 · 网页/App",
+        "tier": "A",
+        "score": 85,
+        "features": ["中文最流畅", "阿里生态集成", "免费为主"],
+        "keywords": ["通义", "tongyi", "通义灵码", "阿里 ai"]
+      },
+      {
+        "name": "Kimi",
+        "company": "Moonshot AI",
+        "tier": "A",
+        "score": 82,
+        "features": ["超长文档", "中文优化", "免费可用"],
+        "keywords": ["kimi", "moonshot", "月之暗面"]
+      },
+      {
+        "name": "Grok",
+        "company": "xAI",
+        "tier": "A",
+        "score": 83,
+        "features": ["实时 X 数据", "思维链", "Grok 3 推理强"],
+        "keywords": ["grok", "xai", "elon musk ai", "grok 3"]
+      },
+      {
+        "name": "Perplexity",
+        "company": "Perplexity AI",
+        "tier": "A",
+        "score": 80,
+        "features": ["实时搜索", "引用来源", "研究模式"],
+        "keywords": ["perplexity", "perplexity ai"]
+      }
+    ]
+  },
+  "💻 编程工具": {
+    "icon": "💻",
+    "desc": "Coding Tools — 专为开发者设计，把 AI 融入写代码的流程",
+    "products": [
+      {
+        "name": "Claude Code",
+        "company": "Anthropic · CLI 工具",
+        "tier": "S",
+        "score": 98,
+        "features": ["终端原生", "全代码库理解", "Agentic 最强"],
+        "keywords": ["claude code", "anthropic code"]
+      },
+      {
+        "name": "Codex",
+        "company": "OpenAI · 代码 Agent",
+        "tier": "S",
+        "score": 93,
+        "features": ["云端沙箱执行", "GPT-5 驱动", "多任务并行"],
+        "keywords": ["codex", "openai codex", "chatgpt code"]
+      },
+      {
+        "name": "Cursor",
+        "company": "Anysphere · IDE",
+        "tier": "A",
+        "score": 90,
+        "features": ["Vibe Coding 代表", "多文件编辑", "Tab 补全极智能"],
+        "keywords": ["cursor", "cursor ide", "cursor editor"]
+      },
+      {
+        "name": "Gemini CLI",
+        "company": "Google · CLI 工具",
+        "tier": "A",
+        "score": 84,
+        "features": ["终端集成", "免费额度大", "Google 生态"],
+        "keywords": ["gemini cli", "google gemini code", "gemini code"]
+      },
+      {
+        "name": "GitHub Copilot",
+        "company": "GitHub / Microsoft",
+        "tier": "A",
+        "score": 82,
+        "features": ["IDE 广泛支持", "企业版", "行内补全"],
+        "keywords": ["copilot", "github copilot", "microsoft copilot"]
+      },
+      {
+        "name": "Windsurf / Codeium",
+        "company": "Codeium",
+        "tier": "B",
+        "score": 75,
+        "features": ["免费计划", "多 IDE 支持", "快速补全"],
+        "keywords": ["codeium", "windsurf"]
+      }
+    ]
+  },
+  "⚙️ Agent 平台": {
+    "icon": "⚙️",
+    "desc": "Agent Platforms — 让人不用写代码就能搭 Agent，管理工作流",
+    "products": [
+      {
+        "name": "Coze / 扣子",
+        "company": "字节跳动",
+        "tier": "S",
+        "score": 90,
+        "features": ["可视化工作流", "知识库 RAG", "发布到微信/飞书"],
+        "keywords": ["coze", "扣子", "bytedance agent"]
+      },
+      {
+        "name": "百炼",
+        "company": "阿里云",
+        "tier": "A",
+        "score": 83,
+        "features": ["企业级 LLM", "微调/RAG 全套", "阿里版 Bedrock"],
+        "keywords": ["百炼", "bailian", "阿里云 ai"]
+      },
+      {
+        "name": "ideaLAB",
+        "company": "阿里巴巴内部",
+        "tier": "A",
+        "score": 85,
+        "features": ["内部版 Coze", "集成 OA/审批流", "低代码搭 Agent"],
+        "keywords": ["idealab", "idea lab", "阿里内部 agent"]
+      },
+      {
+        "name": "Dify",
+        "company": "Dify",
+        "tier": "A",
+        "score": 82,
+        "features": ["无代码搭建", "工作流可视化", "开源"],
+        "keywords": ["dify", "dify.ai"]
+      },
+      {
+        "name": "LangChain",
+        "company": "LangChain",
+        "tier": "A",
+        "score": 80,
+        "features": ["生态丰富", "多模型支持", "RAG 链路"],
+        "keywords": ["langchain", "langsmith"]
+      },
+      {
+        "name": "CrewAI",
+        "company": "CrewAI",
+        "tier": "B",
+        "score": 78,
+        "features": ["多 Agent 协作", "角色定义", "任务分解"],
+        "keywords": ["crewai", "crew ai"]
+      }
+    ]
+  },
+  "🏠 本地框架": {
+    "icon": "🏠",
+    "desc": "Local Frameworks — 自己部署，数据不出，给模型装手脚",
+    "products": [
+      {
+        "name": "OpenClaw（小龙虾）",
+        "company": "开源社区",
+        "tier": "A",
+        "score": 82,
+        "features": ["零代码部署", "完全本地", "后台持续运行", "可换模型"],
+        "keywords": ["openclaw", "小龙虾 ai"]
+      },
+      {
+        "name": "Hermes Agent",
+        "company": "Nous Research · 开源",
+        "tier": "A",
+        "score": 80,
+        "features": ["持久记忆", "自进化", "7×24 运行"],
+        "keywords": ["hermes agent", "nous research", "hermes"]
+      },
+      {
+        "name": "Ollama",
+        "company": "Ollama",
+        "tier": "A",
+        "score": 85,
+        "features": ["本地跑大模型", "一键安装", "支持 Llama/Qwen 等"],
+        "keywords": ["ollama", "local llm", "local model"]
+      },
+      {
+        "name": "LM Studio",
+        "company": "LM Studio",
+        "tier": "B",
+        "score": 78,
+        "features": ["图形界面", "模型市场", "本地 API"],
+        "keywords": ["lm studio", "lmstudio"]
+      }
+    ]
+  },
+  "🎨 图像生成": {
+    "icon": "🎨",
+    "desc": "Image Generation — 文字变图像",
+    "products": [
+      {
+        "name": "Midjourney",
+        "company": "Midjourney",
+        "tier": "S",
+        "score": 96,
+        "features": ["艺术风格👑", "高质量输出", "社区活跃"],
+        "keywords": ["midjourney", "mj v6", "midjourney v7"]
+      },
+      {
+        "name": "Flux",
+        "company": "Black Forest Labs",
+        "tier": "S",
+        "score": 91,
+        "features": ["开源可用", "超高细节", "速度快"],
+        "keywords": ["flux", "flux.1", "black forest labs"]
+      },
+      {
+        "name": "Ideogram",
+        "company": "Ideogram",
+        "tier": "A",
+        "score": 86,
+        "features": ["文字渲染👑", "海报设计", "Logo 生成"],
+        "keywords": ["ideogram"]
+      },
+      {
+        "name": "DALL-E 3",
+        "company": "OpenAI",
+        "tier": "A",
+        "score": 85,
+        "features": ["ChatGPT 集成", "指令遵循强"],
+        "keywords": ["dall-e", "dall-e 3", "dalle", "openai image"]
+      },
+      {
+        "name": "Stable Diffusion",
+        "company": "Stability AI",
+        "tier": "B",
+        "score": 76,
+        "features": ["完全开源", "本地运行", "高度可定制"],
+        "keywords": ["stable diffusion", "stability ai", "sdxl"]
+      }
+    ]
+  },
+  "🎬 视频生成": {
+    "icon": "🎬",
+    "desc": "Video Generation — 文字/图像变视频",
+    "products": [
+      {
+        "name": "Kling（可灵）",
+        "company": "快手",
+        "tier": "S",
+        "score": 93,
+        "features": ["国产领先", "图生视频", "运动流畅"],
+        "keywords": ["kling", "可灵", "kuaishou video", "快手 ai"]
+      },
+      {
+        "name": "Sora",
+        "company": "OpenAI",
+        "tier": "S",
+        "score": 92,
+        "features": ["长视频", "物理理解", "故事连贯"],
+        "keywords": ["sora", "openai video", "openai sora"]
+      },
+      {
+        "name": "Wan（万象）",
+        "company": "阿里",
+        "tier": "A",
+        "score": 88,
+        "features": ["开源模型", "高分辨率", "中文生态"],
+        "keywords": ["wan video", "alibaba video", "wanxiang", "wan2.1"]
+      },
+      {
+        "name": "Runway Gen-3",
+        "company": "Runway",
+        "tier": "A",
+        "score": 85,
+        "features": ["专业级输出", "视频编辑", "企业版"],
+        "keywords": ["runway", "gen-3", "runway ml"]
+      },
+      {
+        "name": "Pika",
+        "company": "Pika Labs",
+        "tier": "B",
+        "score": 76,
+        "features": ["易用性高", "短视频", "风格迁移"],
+        "keywords": ["pika", "pika labs"]
+      }
+    ]
+  },
+  "🎙️ 语音 AI": {
+    "icon": "🎙️",
+    "desc": "Voice AI — 文字转语音、声音克隆",
+    "products": [
+      {
+        "name": "ElevenLabs",
+        "company": "ElevenLabs",
+        "tier": "S",
+        "score": 96,
+        "features": ["音色克隆👑", "多语言", "情感控制", "实时合成"],
+        "keywords": ["elevenlabs", "eleven labs"]
+      },
+      {
+        "name": "Fish Audio",
+        "company": "Fish Audio",
+        "tier": "A",
+        "score": 86,
+        "features": ["中文顶级", "开源模型", "声音克隆"],
+        "keywords": ["fish audio", "fish speech"]
+      },
+      {
+        "name": "OpenAI TTS",
+        "company": "OpenAI",
+        "tier": "A",
+        "score": 84,
+        "features": ["API 集成", "6 种声音", "低延迟"],
+        "keywords": ["openai tts", "openai voice", "openai audio"]
+      },
+      {
+        "name": "Murf AI",
+        "company": "Murf",
+        "tier": "B",
+        "score": 76,
+        "features": ["120+ 声音", "视频配音", "企业版"],
+        "keywords": ["murf", "murf ai"]
+      }
+    ]
+  }
+}

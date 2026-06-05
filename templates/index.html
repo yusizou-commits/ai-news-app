@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 日报</title>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a24;
+    --surface2: #1e2433;
+    --border: #2a3045;
+    --accent: #5b8af5;
+    --accent2: #7c6cf8;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --orange: #fb923c;
+    --text: #e2e8f0;
+    --text2: #8892a4;
+    --text3: #5a6475;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+  }
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #0d1117 0%, #161a24 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .date-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+  .refresh-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    gap: 0;
+  }
+  .tab {
+    padding: 14px 20px;
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: -1px;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab-count {
+    background: var(--accent);
+    color: white;
+    border-radius: 10px;
+    padding: 1px 7px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* Main content */
+  .main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Loading */
+  .loading {
+    display: flex; align-items: center; justify-content: center;
+    padding: 80px 0; gap: 12px; color: var(--text2);
+  }
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== TAB 1: Products ===== */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 20px;
+  }
+  .category-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .category-card:hover { border-color: #3a4560; }
+  .category-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface2);
+  }
+  .category-title {
+    font-size: 14px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .category-icon { font-size: 16px; }
+  .category-news-count {
+    font-size: 11px; color: var(--accent);
+    background: rgba(91,138,245,0.1);
+    border: 1px solid rgba(91,138,245,0.3);
+    padding: 2px 8px; border-radius: 10px;
+  }
+  .product-list { padding: 8px; }
+  .product-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 10px;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s;
+    position: relative;
+  }
+  .product-item:hover { background: var(--surface2); }
+  .tier-badge {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .tier-S { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; }
+  .tier-A { background: linear-gradient(135deg, #34d399, #10b981); color: #000; }
+  .tier-B { background: linear-gradient(135deg, #60a5fa, #3b82f6); color: #fff; }
+  .tier-C { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+  .product-info { flex: 1; min-width: 0; }
+  .product-name-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 3px;
+  }
+  .product-name { font-size: 13px; font-weight: 600; }
+  .product-company { font-size: 11px; color: var(--text3); }
+  .new-badge {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    font-size: 10px; font-weight: 700;
+    padding: 1px 6px; border-radius: 4px;
+    letter-spacing: 0.5px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  .product-features {
+    display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;
+  }
+  .feature-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text3);
+    font-size: 11px;
+    padding: 2px 7px; border-radius: 4px;
+  }
+  .related-news { margin-top: 6px; }
+  .related-news-item {
+    display: flex; align-items: flex-start; gap: 5px;
+    font-size: 11px; color: var(--accent);
+    padding: 2px 0;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .related-news-item:hover { color: #7badff; text-decoration: underline; }
+  .news-dot { color: var(--text3); flex-shrink: 0; }
+
+  /* ===== TAB 2: News ===== */
+  .news-controls {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .play-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .play-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .play-btn:active { transform: translateY(0); }
+  .play-btn.playing {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+  .control-group { display: flex; align-items: center; gap: 8px; }
+  .control-label { font-size: 12px; color: var(--text2); white-space: nowrap; }
+  .control-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    cursor: pointer;
+    max-width: 200px;
+  }
+  .control-range {
+    -webkit-appearance: none;
+    width: 80px; height: 4px;
+    background: var(--border);
+    border-radius: 2px; outline: none;
+  }
+  .control-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border-radius: 50%; cursor: pointer;
+  }
+  .range-value { font-size: 12px; color: var(--text2); min-width: 28px; }
+  .news-stats {
+    margin-left: auto;
+    font-size: 12px; color: var(--text3);
+    white-space: nowrap;
+  }
+
+  .news-list { display: flex; flex-direction: column; gap: 12px; }
+  .news-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    transition: all 0.2s;
+    cursor: default;
+    border-left: 3px solid transparent;
+  }
+  .news-card:hover { border-color: #2a3045; border-left-color: var(--accent); }
+  .news-card.reading {
+    border-left-color: var(--accent);
+    background: rgba(91,138,245,0.05);
+    box-shadow: 0 0 0 1px rgba(91,138,245,0.2);
+  }
+  .news-card-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 12px; margin-bottom: 8px;
+  }
+  .news-titles { flex: 1; min-width: 0; }
+  .news-title-zh {
+    font-size: 15px; font-weight: 600;
+    line-height: 1.4; margin-bottom: 4px;
+    color: var(--text);
+  }
+  .news-title-en {
+    font-size: 12px; color: var(--text3);
+    line-height: 1.4;
+    font-style: italic;
+  }
+  .news-meta {
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0; flex-direction: column; align-items: flex-end;
+  }
+  .source-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 11px; padding: 2px 8px;
+    border-radius: 4px; white-space: nowrap;
+  }
+  .news-time { font-size: 11px; color: var(--text3); white-space: nowrap; }
+  .news-summary-zh {
+    font-size: 13px; color: var(--text2);
+    line-height: 1.6; margin-bottom: 8px;
+  }
+  .news-summary-en {
+    font-size: 12px; color: var(--text3);
+    line-height: 1.5; margin-bottom: 10px;
+    border-left: 2px solid var(--border);
+    padding-left: 10px;
+    display: none;
+  }
+  .news-card:hover .news-summary-en { display: block; }
+  .news-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .multi-source {
+    font-size: 11px; color: var(--green);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .read-more {
+    font-size: 12px; color: var(--accent);
+    text-decoration: none; display: flex; align-items: center; gap: 4px;
+  }
+  .read-more:hover { text-decoration: underline; }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+    margin-bottom: 4px;
+    display: none;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.3s;
+  }
+  .reading-indicator {
+    display: none;
+    font-size: 11px; color: var(--accent);
+    text-align: center; padding: 8px;
+    animation: blink 1s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 60px 20px; color: var(--text3); }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; }
+  .error-msg {
+    background: rgba(248,113,113,0.1);
+    border: 1px solid rgba(248,113,113,0.3);
+    color: var(--red);
+    padding: 12px 16px; border-radius: var(--radius-sm);
+    font-size: 13px; margin-bottom: 16px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    AI 日报
+  </div>
+  <div class="header-right">
+    <div class="date-badge" id="dateBadge">加载中...</div>
+    <button class="refresh-btn" onclick="refreshAll()">
+      <span>↻</span> 刷新
+    </button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(0)" id="tab0">
+    📊 产品排行
+    <span class="tab-count" id="newCount" style="display:none">0 条新闻</span>
+  </div>
+  <div class="tab" onclick="switchTab(1)" id="tab1">
+    📰 今日新闻
+    <span class="tab-count" id="newsCount" style="display:none">0</span>
+  </div>
+</div>
+
+<div class="main">
+  <!-- TAB 0: Products -->
+  <div class="tab-panel active" id="panel0">
+    <div class="loading" id="productsLoading">
+      <div class="spinner"></div> 加载产品数据...
+    </div>
+    <div id="productsError" style="display:none"></div>
+    <div class="products-grid" id="productsGrid" style="display:none"></div>
+  </div>
+
+  <!-- TAB 1: News -->
+  <div class="tab-panel" id="panel1">
+    <div class="loading" id="newsLoading">
+      <div class="spinner"></div> 正在抓取 AI 新闻并翻译，请稍候（约 15-30 秒）...
+    </div>
+    <div id="newsError" style="display:none"></div>
+    <div id="newsPanel" style="display:none">
+      <div class="news-controls">
+        <button class="play-btn" id="playBtn" onclick="togglePlay()">
+          <span id="playIcon">▶</span>
+          <span id="playText">播放今日新闻</span>
+        </button>
+        <div class="control-group">
+          <span class="control-label">声音</span>
+          <select class="control-select" id="voiceSelect">
+            <option value="">加载中...</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <span class="control-label">语速</span>
+          <input type="range" class="control-range" id="rateRange"
+            min="0.5" max="2" step="0.1" value="1"
+            oninput="document.getElementById('rateVal').textContent=this.value+'x'">
+          <span class="range-value" id="rateVal">1x</span>
+        </div>
+        <div class="control-group">
+          <span class="control-label">音调</span>
+          <input type="range" class="control-range" id="pitchRange"
+            min="0.5" max="2" step="0.1" value="1"
+            oninput="document.getElementById('pitchVal').textContent=this.value">
+          <span class="range-value" id="pitchVal">1</span>
+        </div>
+        <div class="news-stats" id="newsStats"></div>
+      </div>
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="reading-indicator" id="readingIndicator">🔊 正在播放...</div>
+      <div class="news-list" id="newsList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let newsData = [];
+let productsData = {};
+let currentUtterance = null;
+let isPlaying = false;
+let currentNewsIndex = 0;
+let voices = [];
+
+// Load voices
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+  const select = document.getElementById('voiceSelect');
+  const zhVoices = voices.filter(v =>
+    v.lang.startsWith('zh') || v.lang.includes('CN') || v.lang.includes('TW') ||
+    v.name.includes('Chinese') || v.name.includes('中')
+  );
+  const allVoices = [...zhVoices, ...voices.filter(v => !zhVoices.includes(v))];
+  select.innerHTML = '';
+  allVoices.forEach((v, i) => {
+    const opt = document.createElement('option');
+    opt.value = voices.indexOf(v);
+    opt.textContent = `${v.name} (${v.lang})`;
+    if (i === 0) opt.selected = true;
+    select.appendChild(opt);
+  });
+  if (select.options.length === 0) {
+    select.innerHTML = '<option value="">系统无可用声音</option>';
+  }
+}
+
+if (window.speechSynthesis) {
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = loadVoices;
+  }
+  setTimeout(loadVoices, 500);
+}
+
+function switchTab(idx) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.tab-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+}
+
+// Fetch & render news
+async function loadNews() {
+  try {
+    const res = await fetch('/api/news');
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || '获取新闻失败');
+    newsData = json.data;
+    document.getElementById('dateBadge').textContent = json.date;
+    document.getElementById('newsLoading').style.display = 'none';
+    document.getElementById('newsPanel').style.display = 'block';
+    document.getElementById('newsCount').textContent = newsData.length;
+    document.getElementById('newsCount').style.display = '';
+    document.getElementById('newsStats').textContent = `共 ${newsData.length} 条可信新闻`;
+    renderNews();
+    // trigger product reload with news context
+    loadProducts();
+  } catch(e) {
+    document.getElementById('newsLoading').style.display = 'none';
+    document.getElementById('newsError').style.display = 'block';
+    document.getElementById('newsError').innerHTML = `<div class="error-msg">⚠️ ${e.message}</div>
+      <p style="color:var(--text2);font-size:13px">请检查网络连接，或点击"刷新"重试。</p>`;
+  }
+}
+
+function renderNews() {
+  const list = document.getElementById('newsList');
+  if (!newsData.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>暂无今日新闻</p></div>';
+    return;
+  }
+  list.innerHTML = newsData.map((item, i) => `
+    <div class="news-card" id="news-${i}">
+      <div class="news-card-header">
+        <div class="news-titles">
+          <div class="news-title-zh">${item.title_zh || item.title_en}</div>
+          <div class="news-title-en">${item.title_en}</div>
+        </div>
+        <div class="news-meta">
+          <span class="source-badge">${item.source}</span>
+          <span class="news-time">${item.published_str || ''}</span>
+        </div>
+      </div>
+      ${item.summary_zh ? `<div class="news-summary-zh">${item.summary_zh}</div>` : ''}
+      ${item.summary_en ? `<div class="news-summary-en">${item.summary_en}</div>` : ''}
+      <div class="news-footer">
+        <span class="multi-source">
+          ${item.source_count > 1 ? `✓ 多源验证（${item.all_sources ? item.all_sources.join(', ') : ''}）` : '✓ 可信来源'}
+        </span>
+        ${item.link ? `<a class="read-more" href="${item.link}" target="_blank">阅读原文 →</a>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// Fetch & render products
+async function loadProducts() {
+  try {
+    const res = await fetch('/api/products');
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || '获取产品数据失败');
+    productsData = json.data;
+    document.getElementById('productsLoading').style.display = 'none';
+    document.getElementById('productsGrid').style.display = 'grid';
+    renderProducts();
+  } catch(e) {
+    document.getElementById('productsLoading').style.display = 'none';
+    document.getElementById('productsError').style.display = 'block';
+    document.getElementById('productsError').innerHTML = `<div class="error-msg">⚠️ ${e.message}</div>`;
+  }
+}
+
+function renderProducts() {
+  const grid = document.getElementById('productsGrid');
+  let totalNew = 0;
+  const html = Object.entries(productsData).map(([category, data]) => {
+    const newCount = data.products.filter(p => p.has_news).length;
+    totalNew += newCount;
+    const productsHtml = data.products.map(p => `
+      <div class="product-item">
+        <div class="tier-badge tier-${p.tier}">${p.tier}</div>
+        <div class="product-info">
+          <div class="product-name-row">
+            <span class="product-name">${p.name}</span>
+            <span class="product-company">${p.company}</span>
+            ${p.has_news ? '<span class="new-badge">NEW</span>' : ''}
+          </div>
+          <div class="product-features">
+            ${(p.features||[]).map(f => `<span class="feature-tag">${f}</span>`).join('')}
+          </div>
+          ${p.has_news && p.related_news && p.related_news.length ? `
+            <div class="related-news">
+              ${p.related_news.map(n => `
+                <a class="related-news-item" href="${n.link}" target="_blank">
+                  <span class="news-dot">•</span>${n.title_zh}
+                </a>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+    return `
+      <div class="category-card">
+        <div class="category-header">
+          <div class="category-title">
+            <span class="category-icon">${data.icon}</span>
+            ${category}
+          </div>
+          ${newCount > 0 ? `<span class="category-news-count">+${newCount} 条新闻</span>` : ''}
+        </div>
+        ${data.desc ? `<div style="padding:6px 16px 0;font-size:11px;color:var(--text3)">${data.desc}</div>` : ''}
+        <div class="product-list">${productsHtml}</div>
+      </div>
+    `;
+  }).join('');
+  grid.innerHTML = html;
+  if (totalNew > 0) {
+    document.getElementById('newCount').textContent = `${totalNew} 条新闻`;
+    document.getElementById('newCount').style.display = '';
+  }
+}
+
+// TTS
+function togglePlay() {
+  if (isPlaying) {
+    stopPlay();
+  } else {
+    startPlay();
+  }
+}
+
+function startPlay() {
+  if (!newsData.length) return;
+  isPlaying = true;
+  currentNewsIndex = 0;
+  document.getElementById('playBtn').classList.add('playing');
+  document.getElementById('playIcon').textContent = '■';
+  document.getElementById('playText').textContent = '停止播放';
+  document.getElementById('progressBar').style.display = 'block';
+  document.getElementById('readingIndicator').style.display = 'block';
+  playNewsItem(0);
+}
+
+function stopPlay() {
+  speechSynthesis.cancel();
+  isPlaying = false;
+  document.getElementById('playBtn').classList.remove('playing');
+  document.getElementById('playIcon').textContent = '▶';
+  document.getElementById('playText').textContent = '播放今日新闻';
+  document.getElementById('progressBar').style.display = 'none';
+  document.getElementById('readingIndicator').style.display = 'none';
+  document.querySelectorAll('.news-card').forEach(c => c.classList.remove('reading'));
+}
+
+function playNewsItem(index) {
+  if (!isPlaying || index >= newsData.length) {
+    if (isPlaying) stopPlay();
+    return;
+  }
+  currentNewsIndex = index;
+  const pct = Math.round((index / newsData.length) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  // highlight current card
+  document.querySelectorAll('.news-card').forEach(c => c.classList.remove('reading'));
+  const card = document.getElementById(`news-${index}`);
+  if (card) {
+    card.classList.add('reading');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  const item = newsData[index];
+  const text = `第${index+1}条。${item.title_zh || item.title_en}。${item.summary_zh || ''}`;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  const voiceIdx = document.getElementById('voiceSelect').value;
+  if (voiceIdx !== '' && voices[parseInt(voiceIdx)]) {
+    utter.voice = voices[parseInt(voiceIdx)];
+  }
+  utter.rate = parseFloat(document.getElementById('rateRange').value);
+  utter.pitch = parseFloat(document.getElementById('pitchRange').value);
+  utter.lang = 'zh-CN';
+  utter.onend = () => {
+    if (isPlaying) playNewsItem(index + 1);
+  };
+  utter.onerror = () => {
+    if (isPlaying) playNewsItem(index + 1);
+  };
+  currentUtterance = utter;
+  speechSynthesis.speak(utter);
+}
+
+async function refreshAll() {
+  await fetch('/api/refresh');
+  location.reload();
+}
+
+// Init
+loadNews();
+loadProducts();
+</script>
+</body>
+</html>
