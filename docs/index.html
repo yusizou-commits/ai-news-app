@@ -6,413 +6,202 @@
 <title>AI 日报 — 每日 AI 新闻播放器</title>
 <meta name="description" content="一款自动抓取、翻译并朗读每日 AI 新闻的桌面 App，同时提供 AI 产品能力横向对比。">
 <style>
-  :root {
-    --bg: #09090b;
-    --surface: #111113;
-    --surface2: #18181b;
-    --border: #27272a;
-    --accent: #6366f1;
-    --accent2: #8b5cf6;
-    --green: #34d399;
-    --text: #fafafa;
-    --text2: #a1a1aa;
-    --text3: #52525b;
-    --radius: 16px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: -apple-system, "PingFang SC", "Noto Sans SC", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-    font-size: 15px;
-  }
+:root {
+  --bg: #09090b; --surface: #111113; --surface2: #18181b; --border: #27272a;
+  --accent: #6366f1; --accent2: #8b5cf6; --green: #34d399; --red: #f87171;
+  --yellow: #fbbf24; --text: #fafafa; --text2: #a1a1aa; --text3: #52525b;
+  --r: 16px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: -apple-system,"PingFang SC","Noto Sans SC",sans-serif; background:var(--bg); color:var(--text); line-height:1.6; font-size:15px; }
 
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(9,9,11,0.85);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 40px;
-    height: 56px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .nav-logo {
-    display: flex; align-items: center; gap: 10px;
-    font-weight: 700; font-size: 16px;
-    text-decoration: none; color: var(--text);
-  }
-  .nav-logo-icon {
-    width: 30px; height: 30px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-  }
-  .nav-links { display: flex; gap: 32px; }
-  .nav-links a {
-    color: var(--text2); text-decoration: none; font-size: 13px;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--text); }
-  .nav-cta {
-    background: var(--accent);
-    color: white !important;
-    padding: 7px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 13px !important;
-  }
-  .nav-cta:hover { background: #4f46e5 !important; }
+/* NAV */
+nav { position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(9,9,11,.88); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); padding:0 40px; height:56px; display:flex; align-items:center; justify-content:space-between; }
+.nav-logo { display:flex; align-items:center; gap:10px; font-weight:700; font-size:16px; text-decoration:none; color:var(--text); }
+.nav-logo-icon { width:30px; height:30px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; }
+.nav-links { display:flex; gap:28px; }
+.nav-links a { color:var(--text2); text-decoration:none; font-size:13px; transition:color .2s; }
+.nav-links a:hover { color:var(--text); }
+.nav-cta { background:var(--accent)!important; color:#fff!important; padding:7px 16px; border-radius:8px; font-weight:600; }
+.nav-cta:hover { background:#4f46e5!important; }
 
-  /* ── HERO ── */
-  .hero {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center;
-    padding: 120px 40px 80px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.25), transparent),
-      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(139,92,246,0.15), transparent);
-    pointer-events: none;
-  }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(99,102,241,0.1);
-    border: 1px solid rgba(99,102,241,0.3);
-    color: #818cf8;
-    padding: 5px 14px; border-radius: 99px;
-    font-size: 12px; font-weight: 600;
-    margin-bottom: 24px;
-    letter-spacing: 0.3px;
-  }
-  .hero h1 {
-    font-size: clamp(36px, 6vw, 72px);
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -1.5px;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .hero h1 span {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .hero-sub {
-    font-size: clamp(15px, 2vw, 18px);
-    color: var(--text2);
-    max-width: 560px;
-    margin: 0 auto 40px;
-    line-height: 1.7;
-  }
-  .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white; text-decoration: none;
-    padding: 12px 28px; border-radius: 10px;
-    font-size: 14px; font-weight: 600;
-    display: flex; align-items: center; gap: 8px;
-    transition: filter 0.2s, transform 0.2s;
-  }
-  .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); }
-  .btn-secondary {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text); text-decoration: none;
-    padding: 12px 28px; border-radius: 10px;
-    font-size: 14px; font-weight: 600;
-    display: flex; align-items: center; gap: 8px;
-    transition: border-color 0.2s, transform 0.2s;
-  }
-  .btn-secondary:hover { border-color: var(--accent); transform: translateY(-2px); }
+/* HERO */
+.hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:120px 40px 80px; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(99,102,241,.25),transparent),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(139,92,246,.15),transparent); pointer-events:none; }
+.hero-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.3); color:#818cf8; padding:5px 14px; border-radius:99px; font-size:12px; font-weight:600; margin-bottom:24px; letter-spacing:.3px; }
+.hero h1 { font-size:clamp(36px,6vw,72px); font-weight:800; line-height:1.1; letter-spacing:-1.5px; margin-bottom:20px; background:linear-gradient(135deg,#fff 0%,#a1a1aa 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.hero h1 span { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.hero-sub { font-size:clamp(15px,2vw,18px); color:var(--text2); max-width:560px; margin:0 auto 40px; line-height:1.7; }
+.hero-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; text-decoration:none; padding:12px 28px; border-radius:10px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; transition:filter .2s,transform .2s; }
+.btn-primary:hover { filter:brightness(1.1); transform:translateY(-2px); }
+.btn-secondary { background:var(--surface2); border:1px solid var(--border); color:var(--text); text-decoration:none; padding:12px 28px; border-radius:10px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; transition:border-color .2s,transform .2s; }
+.btn-secondary:hover { border-color:var(--accent); transform:translateY(-2px); }
 
-  /* ── MOCKUP ── */
-  .mockup-section {
-    padding: 0 40px 100px;
-    display: flex; justify-content: center;
-  }
-  .mockup-frame {
-    width: 100%; max-width: 900px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
-  }
-  .mockup-bar {
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
-    padding: 12px 16px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .dot { width: 12px; height: 12px; border-radius: 50%; }
-  .dot-r { background: #ff5f57; }
-  .dot-y { background: #ffbd2e; }
-  .dot-g { background: #28ca41; }
-  .mockup-url {
-    flex: 1; text-align: center;
-    background: rgba(255,255,255,0.05);
-    border-radius: 6px;
-    padding: 4px 12px;
-    font-size: 11px; color: var(--text3);
-    margin: 0 12px;
-  }
-  .mockup-inner { padding: 0; }
+/* SECTION COMMON */
+section { padding:100px 40px; }
+.inner { max-width:1100px; margin:0 auto; }
+.label { display:inline-block; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); margin-bottom:12px; }
+.sec-title { font-size:clamp(28px,4vw,44px); font-weight:800; letter-spacing:-.8px; line-height:1.15; margin-bottom:16px; }
+.sec-sub { color:var(--text2); font-size:16px; max-width:600px; line-height:1.7; }
 
-  /* mini app mockup */
-  .mini-app { font-size: 11px; }
-  .mini-header {
-    background: linear-gradient(135deg, #0d1117, #161a24);
-    border-bottom: 1px solid #2a3045;
-    padding: 10px 16px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .mini-logo { font-weight: 700; font-size: 13px; display:flex;align-items:center;gap:6px; }
-  .mini-logo-icon {
-    width:22px;height:22px;background:linear-gradient(135deg,#5b8af5,#7c6cf8);
-    border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;
-  }
-  .mini-tabs {
-    display: flex;
-    background: #161a24;
-    border-bottom: 1px solid #2a3045;
-    padding: 0 16px;
-  }
-  .mini-tab {
-    padding: 8px 14px; font-size: 11px; color: #8892a4;
-    border-bottom: 2px solid transparent; cursor: pointer;
-    display:flex;align-items:center;gap:5px;
-  }
-  .mini-tab.a { color: #5b8af5; border-bottom-color: #5b8af5; }
-  .mini-count {
-    background: #5b8af5; color: white;
-    border-radius: 8px; padding: 1px 5px; font-size: 9px; font-weight:700;
-  }
-  .mini-content { padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .mini-card {
-    background: #1e2433; border: 1px solid #2a3045;
-    border-radius: 10px; padding: 10px; font-size: 10px;
-  }
-  .mini-card-title {
-    font-size: 11px; font-weight: 600; margin-bottom: 6px;
-    display:flex;align-items:center;gap:6px;
-  }
-  .mini-new { background:#ef4444;color:white;font-size:8px;font-weight:700;padding:1px 4px;border-radius:3px; }
-  .mini-product { display:flex;gap:6px;align-items:flex-start;padding:4px 0; }
-  .mini-tier {
-    width:18px;height:18px;border-radius:4px;display:flex;align-items:center;
-    justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;
-  }
-  .ts { background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000; }
-  .ta { background:linear-gradient(135deg,#34d399,#10b981);color:#000; }
-  .tb { background:linear-gradient(135deg,#60a5fa,#3b82f6);color:#fff; }
-  .mini-pname { font-size:10px;font-weight:600; }
-  .mini-pco { font-size:9px;color:#5a6475; }
-  .mini-tags { display:flex;flex-wrap:wrap;gap:2px;margin-top:2px; }
-  .mini-tag {
-    background:#1e2433;border:1px solid #2a3045;
-    color:#5a6475;font-size:8px;padding:1px 4px;border-radius:3px;
-  }
+/* ══ DEMO SECTION ══ */
+.demo-section { padding:80px 40px; }
+.demo-grid { display:flex; flex-direction:column; gap:80px; margin-top:60px; }
+.demo-row { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; }
+.demo-row.reverse { direction:rtl; }
+.demo-row.reverse > * { direction:ltr; }
+.demo-text {}
+.demo-num { font-size:11px; font-weight:700; color:var(--accent); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px; }
+.demo-title { font-size:22px; font-weight:700; margin-bottom:10px; }
+.demo-desc { font-size:14px; color:var(--text2); line-height:1.75; }
+.demo-bullets { margin-top:14px; display:flex; flex-direction:column; gap:6px; }
+.demo-bullet { display:flex; align-items:flex-start; gap:8px; font-size:13px; color:var(--text2); }
+.demo-bullet-dot { color:var(--accent); flex-shrink:0; margin-top:3px; }
 
-  .mini-news-content { padding: 12px; display:flex;flex-direction:column;gap:8px; }
-  .mini-controls {
-    background:#1e2433;border:1px solid #2a3045;border-radius:8px;
-    padding:8px 12px;display:flex;align-items:center;gap:10px;
-  }
-  .mini-play {
-    background:linear-gradient(135deg,#5b8af5,#7c6cf8);color:white;
-    border:none;padding:5px 12px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;
-    display:flex;align-items:center;gap:4px;
-  }
-  .mini-select {
-    background:#0d0f14;border:1px solid #2a3045;color:#8892a4;
-    padding:4px 8px;border-radius:5px;font-size:9px;
-  }
-  .mini-news-card {
-    background:#1e2433;border:1px solid #2a3045;border-radius:8px;
-    padding:10px 12px;border-left:3px solid transparent;
-  }
-  .mini-news-card.active { border-left-color:#5b8af5;background:rgba(91,138,245,0.06); }
-  .mini-news-zh { font-size:11px;font-weight:600;margin-bottom:3px; }
-  .mini-news-en { font-size:9px;color:#5a6475;font-style:italic;margin-bottom:4px; }
-  .mini-news-sum { font-size:10px;color:#8892a4;line-height:1.5; }
-  .mini-news-foot { display:flex;justify-content:space-between;margin-top:5px; }
-  .mini-source { background:#0d0f14;border:1px solid #2a3045;color:#8892a4;font-size:8px;padding:1px 5px;border-radius:3px; }
-  .mini-link { font-size:9px;color:#5b8af5; }
+/* App frame */
+.app-frame { background:#0d0f14; border:1px solid #2a3045; border-radius:14px; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,.5); }
+.app-frame-bar { background:#161a24; border-bottom:1px solid #2a3045; padding:10px 14px; display:flex; align-items:center; gap:7px; }
+.app-dot { width:10px; height:10px; border-radius:50%; }
+.app-header { background:linear-gradient(135deg,#0d1117,#161a24); border-bottom:1px solid #2a3045; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; }
+.app-logo { font-weight:700; font-size:13px; display:flex; align-items:center; gap:6px; color:#e2e8f0; }
+.app-logo-icon { width:22px; height:22px; background:linear-gradient(135deg,#5b8af5,#7c6cf8); border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:10px; }
+.app-tabs { background:#161a24; border-bottom:1px solid #2a3045; display:flex; padding:0 14px; }
+.app-tab { padding:8px 14px; font-size:11px; color:#8892a4; border-bottom:2px solid transparent; display:flex; align-items:center; gap:5px; }
+.app-tab.active { color:#5b8af5; border-bottom-color:#5b8af5; }
+.app-badge { background:#5b8af5; color:#fff; border-radius:8px; padding:1px 5px; font-size:9px; font-weight:700; }
+.app-badge-red { background:#ef4444; color:#fff; border-radius:8px; padding:1px 5px; font-size:9px; font-weight:700; }
 
-  /* ── SECTIONS ── */
-  section { padding: 100px 40px; }
-  .section-inner { max-width: 1100px; margin: 0 auto; }
-  .section-label {
-    display: inline-block;
-    font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 12px;
-  }
-  .section-title {
-    font-size: clamp(28px, 4vw, 44px);
-    font-weight: 800; letter-spacing: -0.8px;
-    line-height: 1.15; margin-bottom: 16px;
-  }
-  .section-sub { color: var(--text2); font-size: 16px; max-width: 600px; line-height: 1.7; }
+/* Products mockup */
+.products-grid-mock { padding:12px; display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.pcat { background:#161a24; border:1px solid #2a3045; border-radius:10px; overflow:hidden; }
+.pcat-hd { background:#1e2433; border-bottom:1px solid #2a3045; padding:8px 12px; display:flex; align-items:center; justify-content:space-between; }
+.pcat-title { font-size:11px; font-weight:600; color:#e2e8f0; }
+.pcat-news { font-size:9px; color:#5b8af5; background:rgba(91,138,245,.1); border:1px solid rgba(91,138,245,.3); padding:1px 6px; border-radius:8px; }
+.pcat-desc { font-size:9px; color:#5a6475; padding:4px 12px 0; }
+.pcat-body { padding:6px 8px; }
+.prow { display:flex; gap:6px; align-items:flex-start; padding:4px 2px; }
+.ptier { width:18px; height:18px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:700; flex-shrink:0; }
+.pts { background:linear-gradient(135deg,#fbbf24,#f59e0b); color:#000; }
+.pta { background:linear-gradient(135deg,#34d399,#10b981); color:#000; }
+.ptb { background:linear-gradient(135deg,#60a5fa,#3b82f6); color:#fff; }
+.pname { font-size:10px; font-weight:600; color:#e2e8f0; }
+.pco { font-size:9px; color:#5a6475; }
+.ptags { display:flex; flex-wrap:wrap; gap:2px; margin-top:2px; }
+.ptag { background:#0d0f14; border:1px solid #2a3045; color:#5a6475; font-size:8px; padding:1px 4px; border-radius:3px; }
+.new-tag { background:#ef4444; color:#fff; font-size:8px; font-weight:700; padding:1px 4px; border-radius:3px; animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+.related-link { font-size:9px; color:#5b8af5; display:block; margin-top:2px; }
 
-  /* ── FEATURES ── */
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px; margin-top: 56px;
-  }
-  .feature-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px;
-    transition: border-color 0.2s, transform 0.2s;
-  }
-  .feature-card:hover { border-color: rgba(99,102,241,0.4); transform: translateY(-3px); }
-  .feature-icon {
-    width: 44px; height: 44px; border-radius: 12px;
-    background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2));
-    border: 1px solid rgba(99,102,241,0.3);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; margin-bottom: 16px;
-  }
-  .feature-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-  .feature-desc { font-size: 13px; color: var(--text2); line-height: 1.65; }
+/* News mockup */
+.news-controls-mock { background:#1e2433; border-bottom:1px solid #2a3045; padding:10px 14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.play-btn-mock { background:linear-gradient(135deg,#5b8af5,#7c6cf8); color:#fff; border:none; padding:6px 14px; border-radius:7px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:5px; cursor:pointer; }
+.play-btn-mock.playing { background:linear-gradient(135deg,#ef4444,#dc2626); }
+.ctrl-label { font-size:10px; color:#8892a4; }
+.ctrl-select { background:#0d0f14; border:1px solid #2a3045; color:#8892a4; padding:4px 8px; border-radius:5px; font-size:9px; }
+.ctrl-range { -webkit-appearance:none; width:60px; height:3px; background:#2a3045; border-radius:2px; }
+.ctrl-range::-webkit-slider-thumb { -webkit-appearance:none; width:12px; height:12px; background:#5b8af5; border-radius:50%; }
+.range-val { font-size:10px; color:#8892a4; }
+.progress-bar-mock { height:2px; background:#2a3045; margin:0 14px; }
+.progress-fill-mock { height:100%; background:linear-gradient(90deg,#5b8af5,#7c6cf8); border-radius:1px; }
+.reading-ind { font-size:10px; color:#5b8af5; text-align:center; padding:5px; animation:blink 1s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.news-list-mock { padding:10px 12px; display:flex; flex-direction:column; gap:7px; }
+.ncard { background:#161a24; border:1px solid #2a3045; border-radius:8px; padding:10px 12px; border-left:3px solid transparent; }
+.ncard.reading { border-left-color:#5b8af5; background:rgba(91,138,245,.06); box-shadow:0 0 0 1px rgba(91,138,245,.2); }
+.ncard-hd { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:5px; }
+.ncard-zh { font-size:11px; font-weight:600; color:#e2e8f0; line-height:1.4; }
+.ncard-en { font-size:9px; color:#5a6475; font-style:italic; margin-top:2px; }
+.nsource { background:#0d0f14; border:1px solid #2a3045; color:#8892a4; font-size:8px; padding:2px 6px; border-radius:3px; white-space:nowrap; }
+.ntime { font-size:9px; color:#5a6475; white-space:nowrap; }
+.nsum { font-size:10px; color:#8892a4; line-height:1.5; margin-bottom:5px; }
+.nfoot { display:flex; align-items:center; justify-content:space-between; }
+.nverify { font-size:9px; color:#34d399; }
+.nlink { font-size:9px; color:#5b8af5; }
 
-  /* ── PLAN TIMELINE ── */
-  .plan-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .timeline { margin-top: 56px; position: relative; }
-  .timeline::before {
-    content: '';
-    position: absolute; left: 20px; top: 0; bottom: 0;
-    width: 1px; background: linear-gradient(to bottom, var(--accent), transparent);
-  }
-  .tl-item { display: flex; gap: 32px; margin-bottom: 48px; padding-left: 52px; position: relative; }
-  .tl-dot {
-    position: absolute; left: 12px; top: 4px;
-    width: 18px; height: 18px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: 2px solid var(--bg);
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
-    flex-shrink: 0;
-  }
-  .tl-num {
-    font-size: 11px; font-weight: 700; color: var(--accent);
-    letter-spacing: 1px; margin-bottom: 6px;
-  }
-  .tl-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-  .tl-desc { font-size: 13px; color: var(--text2); line-height: 1.7; }
-  .tl-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-  .tl-tag {
-    background: rgba(99,102,241,0.1);
-    border: 1px solid rgba(99,102,241,0.25);
-    color: #818cf8; font-size: 11px; padding: 3px 10px; border-radius: 6px;
-  }
+/* Filter mockup */
+.filter-explain { background:#1e2433; border:1px solid #2a3045; border-radius:10px; padding:12px 14px; }
+.filter-step { display:flex; align-items:flex-start; gap:10px; padding:6px 0; border-bottom:1px solid #2a3045; }
+.filter-step:last-child { border:none; }
+.filter-icon { width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; }
+.fi-green { background:rgba(52,211,153,.15); }
+.fi-red { background:rgba(248,113,113,.15); }
+.fi-blue { background:rgba(91,138,245,.15); }
+.filter-title { font-size:11px; font-weight:600; color:#e2e8f0; }
+.filter-desc { font-size:10px; color:#8892a4; margin-top:1px; }
+.filter-result { display:flex; gap:4px; margin-top:4px; flex-wrap:wrap; }
+.ftag-pass { background:rgba(52,211,153,.1); border:1px solid rgba(52,211,153,.3); color:#34d399; font-size:8px; padding:1px 5px; border-radius:3px; }
+.ftag-fail { background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.3); color:#f87171; font-size:8px; padding:1px 5px; border-radius:3px; text-decoration:line-through; }
 
-  /* ── TECH STACK ── */
-  .stack-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 14px; margin-top: 48px;
-  }
-  .stack-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    display: flex; align-items: center; gap: 14px;
-    transition: border-color 0.2s;
-  }
-  .stack-item:hover { border-color: rgba(99,102,241,0.4); }
-  .stack-icon { font-size: 24px; flex-shrink: 0; }
-  .stack-name { font-size: 13px; font-weight: 600; }
-  .stack-role { font-size: 11px; color: var(--text3); margin-top: 2px; }
+/* 8 categories grid */
+.cats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:12px; }
+.cat-chip { background:#1e2433; border:1px solid #2a3045; border-radius:8px; padding:10px; text-align:center; }
+.cat-chip-icon { font-size:18px; margin-bottom:4px; }
+.cat-chip-name { font-size:10px; font-weight:600; color:#e2e8f0; }
+.cat-chip-count { font-size:9px; color:#5a6475; margin-top:1px; }
 
-  /* ── INSTALL ── */
-  .install-block {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px 32px;
-    margin-top: 40px;
-  }
-  .install-block code {
-    font-family: "SF Mono", "Fira Code", monospace;
-    font-size: 13px;
-  }
-  .code-line {
-    display: flex; align-items: center; gap: 12px;
-    padding: 6px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .code-line:last-child { border-bottom: none; }
-  .code-prompt { color: var(--text3); flex-shrink: 0; }
-  .code-cmd { color: var(--green); }
-  .code-comment { color: var(--text3); font-size: 12px; margin-left: auto; }
+/* FEATURES */
+.features-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; margin-top:56px; }
+.fcard { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:28px; transition:border-color .2s,transform .2s; }
+.fcard:hover { border-color:rgba(99,102,241,.4); transform:translateY(-3px); }
+.fcard-icon { width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(139,92,246,.2)); border:1px solid rgba(99,102,241,.3); display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:16px; }
+.fcard-title { font-size:16px; font-weight:700; margin-bottom:8px; }
+.fcard-desc { font-size:13px; color:var(--text2); line-height:1.65; }
 
-  /* ── DATA FLOW ── */
-  .flow {
-    display: flex; align-items: center; gap: 12px;
-    flex-wrap: wrap; margin-top: 48px;
-  }
-  .flow-node {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 20px;
-    text-align: center;
-    min-width: 140px;
-  }
-  .flow-node-icon { font-size: 24px; margin-bottom: 6px; }
-  .flow-node-name { font-size: 13px; font-weight: 600; }
-  .flow-node-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
-  .flow-arrow { font-size: 20px; color: var(--text3); }
+/* PLAN */
+.plan-section { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.timeline { margin-top:56px; position:relative; }
+.timeline::before { content:''; position:absolute; left:20px; top:0; bottom:0; width:1px; background:linear-gradient(to bottom,var(--accent),transparent); }
+.tl-item { display:flex; gap:32px; margin-bottom:48px; padding-left:52px; position:relative; }
+.tl-dot { position:absolute; left:12px; top:4px; width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:2px solid var(--bg); box-shadow:0 0 0 3px rgba(99,102,241,.2); }
+.tl-num { font-size:11px; font-weight:700; color:var(--accent); letter-spacing:1px; margin-bottom:6px; }
+.tl-title { font-size:18px; font-weight:700; margin-bottom:8px; }
+.tl-desc { font-size:13px; color:var(--text2); line-height:1.7; }
+.tl-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+.tl-tag { background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.25); color:#818cf8; font-size:11px; padding:3px 10px; border-radius:6px; }
 
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 40px;
-    text-align: center;
-    color: var(--text3);
-    font-size: 13px;
-  }
-  footer a { color: var(--text2); text-decoration: none; }
-  footer a:hover { color: var(--text); }
+/* STACK */
+.stack-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px; margin-top:48px; }
+.sitem { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; display:flex; align-items:center; gap:14px; transition:border-color .2s; }
+.sitem:hover { border-color:rgba(99,102,241,.4); }
+.sitem-icon { font-size:24px; flex-shrink:0; }
+.sitem-name { font-size:13px; font-weight:600; }
+.sitem-role { font-size:11px; color:var(--text3); margin-top:2px; }
 
-  @media (max-width: 768px) {
-    nav { padding: 0 20px; }
-    .nav-links { display: none; }
-    section { padding: 60px 20px; }
-    .hero { padding: 100px 20px 60px; }
-    .mockup-section { padding: 0 20px 60px; }
-    .mini-content { grid-template-columns: 1fr; }
-    footer { padding: 24px 20px; }
-    .flow { justify-content: center; }
-  }
+/* INSTALL */
+.install-block { background:var(--surface2); border:1px solid var(--border); border-radius:var(--r); padding:28px 32px; margin-top:40px; }
+.code-line { display:flex; align-items:center; gap:12px; padding:6px 0; border-bottom:1px solid var(--border); }
+.code-line:last-child { border-bottom:none; }
+.code-prompt { color:var(--text3); flex-shrink:0; font-family:"SF Mono","Fira Code",monospace; }
+.code-cmd { color:var(--green); font-family:"SF Mono","Fira Code",monospace; font-size:13px; }
+.code-comment { color:var(--text3); font-size:12px; margin-left:auto; }
+
+footer { border-top:1px solid var(--border); padding:40px; text-align:center; color:var(--text3); font-size:13px; }
+footer a { color:var(--text2); text-decoration:none; }
+
+@media(max-width:900px) {
+  .demo-row { grid-template-columns:1fr; }
+  .demo-row.reverse { direction:ltr; }
+  nav { padding:0 20px; }
+  .nav-links { display:none; }
+  section,.demo-section { padding:60px 20px; }
+  .hero { padding:100px 20px 60px; }
+  .cats-grid { grid-template-columns:repeat(2,1fr); }
+  .products-grid-mock { grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
 
 <nav>
   <a class="nav-logo" href="#">
-    <div class="nav-logo-icon">⚡</div>
-    AI 日报
+    <div class="nav-logo-icon">⚡</div>AI 日报
   </a>
   <div class="nav-links">
-    <a href="#features">功能</a>
+    <a href="#demo">功能演示</a>
+    <a href="#features">特性</a>
     <a href="#plan">设计思路</a>
-    <a href="#stack">技术栈</a>
     <a href="#install">安装</a>
     <a href="https://github.com/yusizou-commits/ai-news-app" target="_blank" class="nav-cta">GitHub →</a>
   </div>
@@ -420,432 +209,465 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">⚡ 用 Claude Code 构建 · 一键启动</div>
+  <div class="hero-badge">⚡ 用 Claude Code 构建 · Python 3 · 一键启动</div>
   <h1>每日 <span>AI 新闻</span><br>自动抓取 · 翻译 · 朗读</h1>
-  <p class="hero-sub">
-    自动从全球顶级 AI 媒体抓取当天新闻，过滤虚假内容，翻译成中文，支持语音播报。
-    同时内置 8 大类 AI 产品能力横向对比，实时标注今日有新闻的产品。
-  </p>
+  <p class="hero-sub">自动从全球顶级 AI 媒体抓取当天新闻，过滤虚假内容，翻译成中文，支持语音播报。同时内置 8 大类 40+ AI 产品能力横向对比，实时标注今日有新闻的产品。</p>
   <div class="hero-actions">
-    <a href="https://github.com/yusizou-commits/ai-news-app" target="_blank" class="btn-primary">
-      ⬇ 下载源码
-    </a>
-    <a href="#install" class="btn-secondary">
-      🚀 快速启动
-    </a>
+    <a href="https://github.com/yusizou-commits/ai-news-app" target="_blank" class="btn-primary">⬇ 下载源码</a>
+    <a href="#demo" class="btn-secondary">👀 查看演示</a>
   </div>
 </section>
 
-<!-- MOCKUP -->
-<div class="mockup-section">
-  <div class="mockup-frame">
-    <div class="mockup-bar">
-      <div class="dot dot-r"></div>
-      <div class="dot dot-y"></div>
-      <div class="dot dot-g"></div>
-      <div class="mockup-url">localhost:7788</div>
-    </div>
-    <div class="mockup-inner">
-      <div class="mini-app">
-        <!-- App Header -->
-        <div class="mini-header">
-          <div class="mini-logo">
-            <div class="mini-logo-icon">⚡</div>
-            AI 日报
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <div style="background:#1e2433;border:1px solid #2a3045;border-radius:12px;padding:3px 10px;font-size:10px;color:#8892a4">2026年06月05日</div>
-            <div style="background:#1e2433;border:1px solid #2a3045;border-radius:5px;padding:4px 8px;font-size:10px;color:#8892a4">↻ 刷新</div>
+<!-- DEMO -->
+<section class="demo-section" id="demo">
+  <div class="inner">
+    <div class="label">功能演示</div>
+    <h2 class="sec-title">两个 Tab，完整 AI 情报站</h2>
+    <p class="sec-sub">以下每个模块对应 App 的一个真实界面，展示实际功能和数据样式。</p>
+
+    <div class="demo-grid">
+
+      <!-- DEMO 1: 产品排行 Tab -->
+      <div class="demo-row">
+        <div class="demo-text">
+          <div class="demo-num">FEATURE 01</div>
+          <div class="demo-title">📊 AI 产品排行 — Tab 1</div>
+          <div class="demo-desc">按层次分类展示市面上主流 AI 产品，每个产品有能力等级评分和核心功能标签。今日有相关新闻的产品会显示红色 NEW 动态角标，并直接展示相关新闻标题链接。</div>
+          <div class="demo-bullets">
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>8 大类分层：底层大模型 → 对话产品 → 编程工具 → Agent 平台 → 本地框架 → 图像/视频/语音</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>S / A / B 三级能力评分，金/绿/蓝徽章直观区分</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>NEW 角标带呼吸动画，与当日新闻实时联动</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>点击相关新闻标题直接跳转原文</div>
           </div>
         </div>
-        <!-- Tabs -->
-        <div class="mini-tabs">
-          <div class="mini-tab a">📊 产品排行 <span class="mini-count">12 条新闻</span></div>
-          <div class="mini-tab">📰 今日新闻 <span class="mini-count">17</span></div>
-        </div>
-        <!-- Tab 1 content: Products -->
-        <div class="mini-content">
-          <!-- Card 1: 底层大模型 -->
-          <div class="mini-card">
-            <div class="mini-card-title">🧠 底层大模型 <span class="mini-new">+3 条</span></div>
-            <div class="mini-product">
-              <div class="mini-tier ts">S</div>
-              <div>
-                <div class="mini-pname">Claude <span class="mini-new">NEW</span></div>
-                <div class="mini-pco">Anthropic</div>
-                <div class="mini-tags">
-                  <span class="mini-tag">推理👑</span><span class="mini-tag">写作👑</span>
-                </div>
-                <div style="margin-top:4px">
-                  <a style="font-size:9px;color:#5b8af5;display:block">• Anthropic IPO 前收入达 470 亿</a>
-                </div>
+        <div>
+          <div class="app-frame">
+            <div class="app-frame-bar">
+              <div class="app-dot" style="background:#ff5f57"></div>
+              <div class="app-dot" style="background:#ffbd2e"></div>
+              <div class="app-dot" style="background:#28ca41"></div>
+            </div>
+            <div class="app-header">
+              <div class="app-logo"><div class="app-logo-icon">⚡</div>AI 日报</div>
+              <div style="display:flex;gap:6px;align-items:center">
+                <div style="background:#1e2433;border:1px solid #2a3045;border-radius:10px;padding:3px 8px;font-size:9px;color:#8892a4">2026年06月05日</div>
+                <div style="background:#1e2433;border:1px solid #2a3045;border-radius:5px;padding:3px 7px;font-size:9px;color:#8892a4">↻ 刷新</div>
               </div>
             </div>
-            <div class="mini-product">
-              <div class="mini-tier ts">S</div>
-              <div>
-                <div class="mini-pname">GPT-5 系列 <span class="mini-new">NEW</span></div>
-                <div class="mini-pco">OpenAI</div>
-                <div class="mini-tags">
-                  <span class="mini-tag">执行👑</span><span class="mini-tag">生态👑</span>
+            <div class="app-tabs">
+              <div class="app-tab active">📊 产品排行 <span class="app-badge">12条新闻</span></div>
+              <div class="app-tab">📰 今日新闻 <span class="app-badge-red">17</span></div>
+            </div>
+            <div class="products-grid-mock">
+              <!-- 底层大模型 -->
+              <div class="pcat">
+                <div class="pcat-hd">
+                  <div class="pcat-title">🧠 底层大模型</div>
+                  <span class="pcat-news">+3 条新闻</span>
                 </div>
-                <div style="margin-top:4px">
-                  <a style="font-size:9px;color:#5b8af5;display:block">• ChatGPT 推出新记忆系统</a>
+                <div class="pcat-desc">Foundation Models — 是所有产品的大脑</div>
+                <div class="pcat-body">
+                  <div class="prow">
+                    <div class="ptier pts">S</div>
+                    <div>
+                      <div style="display:flex;align-items:center;gap:4px">
+                        <div class="pname">Claude</div><span class="new-tag">NEW</span>
+                      </div>
+                      <div class="pco">Anthropic</div>
+                      <div class="ptags"><span class="ptag">推理👑</span><span class="ptag">写作👑</span><span class="ptag">代码👑</span></div>
+                      <a class="related-link">• Anthropic IPO 前收入达 470 亿</a>
+                    </div>
+                  </div>
+                  <div class="prow">
+                    <div class="ptier pts">S</div>
+                    <div>
+                      <div style="display:flex;align-items:center;gap:4px">
+                        <div class="pname">GPT-5 系列</div><span class="new-tag">NEW</span>
+                      </div>
+                      <div class="pco">OpenAI</div>
+                      <div class="ptags"><span class="ptag">执行👑</span><span class="ptag">生态👑</span></div>
+                      <a class="related-link">• ChatGPT 推出新记忆系统</a>
+                    </div>
+                  </div>
+                  <div class="prow">
+                    <div class="ptier pta">A</div>
+                    <div>
+                      <div class="pname">DeepSeek V4</div>
+                      <div class="pco">深度求索</div>
+                      <div class="ptags"><span class="ptag">性价比👑</span><span class="ptag">GPT 1/34 成本</span></div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="mini-product">
-              <div class="mini-tier ta">A</div>
-              <div>
-                <div class="mini-pname">DeepSeek V4</div>
-                <div class="mini-pco">深度求索</div>
-                <div class="mini-tags">
-                  <span class="mini-tag">性价比👑</span>
+              <!-- 编程工具 -->
+              <div class="pcat">
+                <div class="pcat-hd">
+                  <div class="pcat-title">💻 编程工具</div>
+                  <span class="pcat-news">+2 条新闻</span>
+                </div>
+                <div class="pcat-desc">Coding Tools — AI 融入写代码的流程</div>
+                <div class="pcat-body">
+                  <div class="prow">
+                    <div class="ptier pts">S</div>
+                    <div>
+                      <div style="display:flex;align-items:center;gap:4px">
+                        <div class="pname">Claude Code</div><span class="new-tag">NEW</span>
+                      </div>
+                      <div class="pco">Anthropic · CLI</div>
+                      <div class="ptags"><span class="ptag">终端原生</span><span class="ptag">Agentic 最强</span></div>
+                    </div>
+                  </div>
+                  <div class="prow">
+                    <div class="ptier pts">S</div>
+                    <div>
+                      <div class="pname">Codex</div>
+                      <div class="pco">OpenAI · 代码 Agent</div>
+                      <div class="ptags"><span class="ptag">云端沙箱</span><span class="ptag">GPT-5 驱动</span></div>
+                    </div>
+                  </div>
+                  <div class="prow">
+                    <div class="ptier pta">A</div>
+                    <div>
+                      <div class="pname">Cursor</div>
+                      <div class="pco">Anysphere · IDE</div>
+                      <div class="ptags"><span class="ptag">Vibe Coding</span><span class="ptag">Tab 补全</span></div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <!-- Card 2: 对话产品 -->
-          <div class="mini-card">
-            <div class="mini-card-title">💬 对话产品</div>
-            <div class="mini-product">
-              <div class="mini-tier ts">S</div>
-              <div>
-                <div class="mini-pname">Cowork <span style="font-size:8px;color:#34d399">你在用 ✓</span></div>
-                <div class="mini-pco">Anthropic · 桌面 App</div>
-                <div class="mini-tags">
-                  <span class="mini-tag">本地文件</span><span class="mini-tag">MCP</span>
+              <!-- 对话产品 -->
+              <div class="pcat">
+                <div class="pcat-hd">
+                  <div class="pcat-title">💬 对话产品</div>
+                </div>
+                <div class="pcat-desc">Chat Apps — 普通人能用的对话界面</div>
+                <div class="pcat-body">
+                  <div class="prow">
+                    <div class="ptier pts">S</div>
+                    <div>
+                      <div style="display:flex;align-items:center;gap:4px">
+                        <div class="pname">Cowork</div>
+                        <span style="font-size:8px;color:#34d399">你在用 ✓</span>
+                      </div>
+                      <div class="pco">Anthropic · 桌面 App</div>
+                      <div class="ptags"><span class="ptag">本地文件</span><span class="ptag">MCP</span></div>
+                    </div>
+                  </div>
+                  <div class="prow">
+                    <div class="ptier pts">S</div>
+                    <div>
+                      <div style="display:flex;align-items:center;gap:4px">
+                        <div class="pname">ChatGPT</div><span class="new-tag">NEW</span>
+                      </div>
+                      <div class="pco">OpenAI · 网页/App</div>
+                      <div class="ptags"><span class="ptag">用户最多</span><span class="ptag">GPT 商店</span></div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="mini-product">
-              <div class="mini-tier ts">S</div>
-              <div>
-                <div class="mini-pname">ChatGPT <span class="mini-new">NEW</span></div>
-                <div class="mini-pco">OpenAI · 网页/App</div>
-                <div class="mini-tags">
-                  <span class="mini-tag">用户最多</span>
-                </div>
-              </div>
-            </div>
-            <div class="mini-product">
-              <div class="mini-tier ta">A</div>
-              <div>
-                <div class="mini-pname">通义</div>
-                <div class="mini-pco">阿里 · 网页/App</div>
-                <div class="mini-tags">
-                  <span class="mini-tag">中文最流畅</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Card 3: 编程工具 -->
-          <div class="mini-card">
-            <div class="mini-card-title">💻 编程工具 <span class="mini-new">+2 条</span></div>
-            <div class="mini-product">
-              <div class="mini-tier ts">S</div>
-              <div>
-                <div class="mini-pname">Claude Code <span class="mini-new">NEW</span></div>
-                <div class="mini-pco">Anthropic · CLI</div>
-                <div class="mini-tags">
-                  <span class="mini-tag">终端原生</span><span class="mini-tag">Agentic👑</span>
-                </div>
-              </div>
-            </div>
-            <div class="mini-product">
-              <div class="mini-tier ts">S</div>
-              <div>
-                <div class="mini-pname">Codex</div>
-                <div class="mini-pco">OpenAI · 代码 Agent</div>
-                <div class="mini-tags">
-                  <span class="mini-tag">云端沙箱</span>
-                </div>
-              </div>
-            </div>
-            <div class="mini-product">
-              <div class="mini-tier ta">A</div>
-              <div>
-                <div class="mini-pname">Cursor</div>
-                <div class="mini-pco">Anysphere · IDE</div>
-                <div class="mini-tags">
-                  <span class="mini-tag">Vibe Coding</span>
+              <!-- 8类全览 -->
+              <div class="pcat">
+                <div class="pcat-hd"><div class="pcat-title">全部 8 个分类</div></div>
+                <div class="cats-grid" style="grid-template-columns:repeat(2,1fr);padding:8px">
+                  <div class="cat-chip"><div class="cat-chip-icon">🧠</div><div class="cat-chip-name">底层大模型</div><div class="cat-chip-count">6 款</div></div>
+                  <div class="cat-chip"><div class="cat-chip-icon">💬</div><div class="cat-chip-name">对话产品</div><div class="cat-chip-count">7 款</div></div>
+                  <div class="cat-chip"><div class="cat-chip-icon">💻</div><div class="cat-chip-name">编程工具</div><div class="cat-chip-count">6 款</div></div>
+                  <div class="cat-chip"><div class="cat-chip-icon">⚙️</div><div class="cat-chip-name">Agent 平台</div><div class="cat-chip-count">6 款</div></div>
+                  <div class="cat-chip"><div class="cat-chip-icon">🏠</div><div class="cat-chip-name">本地框架</div><div class="cat-chip-count">4 款</div></div>
+                  <div class="cat-chip"><div class="cat-chip-icon">🎨</div><div class="cat-chip-name">图像生成</div><div class="cat-chip-count">5 款</div></div>
+                  <div class="cat-chip"><div class="cat-chip-icon">🎬</div><div class="cat-chip-name">视频生成</div><div class="cat-chip-count">5 款</div></div>
+                  <div class="cat-chip"><div class="cat-chip-icon">🎙️</div><div class="cat-chip-name">语音 AI</div><div class="cat-chip-count">4 款</div></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- DEMO 2: 新闻 Tab + 播放 -->
+      <div class="demo-row reverse">
+        <div class="demo-text">
+          <div class="demo-num">FEATURE 02</div>
+          <div class="demo-title">📰 今日新闻 + 语音播报 — Tab 2</div>
+          <div class="demo-desc">展示过滤后的当日 AI 新闻，每条新闻中英双语对照。点击播放按钮，App 会依次朗读所有新闻标题和摘要，当前朗读的卡片自动高亮滚动。</div>
+          <div class="demo-bullets">
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>中文翻译大标题 + 英文原标题小字对照</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>中文摘要 + 悬停显示英文原文摘要</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>播放时当前新闻卡片蓝色高亮 + 进度条</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>声音选择器优先列出系统中文语音</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>语速（0.5x–2x）和音调滑块实时调节</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>点击"阅读原文"跳转新闻来源网站</div>
+          </div>
+        </div>
+        <div>
+          <div class="app-frame">
+            <div class="app-frame-bar">
+              <div class="app-dot" style="background:#ff5f57"></div>
+              <div class="app-dot" style="background:#ffbd2e"></div>
+              <div class="app-dot" style="background:#28ca41"></div>
+            </div>
+            <div class="app-header">
+              <div class="app-logo"><div class="app-logo-icon">⚡</div>AI 日报</div>
+              <div style="font-size:9px;color:#8892a4">2026年06月05日</div>
+            </div>
+            <div class="app-tabs">
+              <div class="app-tab">📊 产品排行</div>
+              <div class="app-tab active">📰 今日新闻 <span class="app-badge-red">17</span></div>
+            </div>
+            <!-- Controls -->
+            <div class="news-controls-mock">
+              <div class="play-btn-mock playing">■ 正在播放...</div>
+              <div style="display:flex;align-items:center;gap:5px">
+                <span class="ctrl-label">声音</span>
+                <select class="ctrl-select"><option>Tingting (zh-CN)</option></select>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px">
+                <span class="ctrl-label">语速</span>
+                <input type="range" class="ctrl-range" value="65" disabled>
+                <span class="range-val">1.2x</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px">
+                <span class="ctrl-label">音调</span>
+                <input type="range" class="ctrl-range" value="50" disabled>
+                <span class="range-val">1</span>
+              </div>
+              <span style="font-size:9px;color:#5a6475;margin-left:auto">共 17 条可信新闻</span>
+            </div>
+            <!-- Progress -->
+            <div class="progress-bar-mock">
+              <div class="progress-fill-mock" style="width:35%"></div>
+            </div>
+            <div class="reading-ind">🔊 正在播放第 3 条...</div>
+            <!-- News list -->
+            <div class="news-list-mock">
+              <!-- Card 1: read -->
+              <div class="ncard" style="opacity:.5">
+                <div class="ncard-hd">
+                  <div><div class="ncard-zh">Anthropic IPO 前，Daniela Amodei 回应 AI 回报质疑</div><div class="ncard-en">Ahead of its IPO, Anthropic's Daniela Amodei shrugs off doubts...</div></div>
+                  <div style="text-align:right"><div class="nsource">TechCrunch AI</div><div class="ntime">06-04 22:43</div></div>
+                </div>
+                <div class="nfoot"><span class="nverify">✓ 可信来源</span><span class="nlink">阅读原文 →</span></div>
+              </div>
+              <!-- Card 2: read -->
+              <div class="ncard" style="opacity:.5">
+                <div class="ncard-hd">
+                  <div><div class="ncard-zh">Airbnb 的 Brian Chesky 计划推出新的 AI 实验室</div><div class="ncard-en">Airbnb's Brian Chesky plans to launch a new AI lab</div></div>
+                  <div style="text-align:right"><div class="nsource">TechCrunch AI</div><div class="ntime">06-04 22:29</div></div>
+                </div>
+                <div class="nfoot"><span class="nverify">✓ 可信来源</span><span class="nlink">阅读原文 →</span></div>
+              </div>
+              <!-- Card 3: READING NOW -->
+              <div class="ncard reading">
+                <div class="ncard-hd">
+                  <div>
+                    <div class="ncard-zh">ChatGPT 推出新记忆系统，对话更懂你</div>
+                    <div class="ncard-en">Dreaming: Better memory for a more helpful ChatGPT</div>
+                  </div>
+                  <div style="text-align:right"><div class="nsource">OpenAI Blog</div><div class="ntime">06-04 09:00</div></div>
+                </div>
+                <div class="nsum">ChatGPT 引入了新的记忆系统，可以更好地记住偏好，使对话中的上下文保持新鲜和相关。</div>
+                <div style="font-size:9px;color:#5a6475;font-style:italic;border-left:2px solid #2a3045;padding-left:8px;margin-bottom:5px">ChatGPT introduces a new memory system to better remember preferences, keeping context fresh and relevant across conversations.</div>
+                <div class="nfoot"><span class="nverify">✓ 可信来源</span><span class="nlink">阅读原文 →</span></div>
+              </div>
+              <!-- Card 4 -->
+              <div class="ncard">
+                <div class="ncard-hd">
+                  <div><div class="ncard-zh">法院如何应对人工智能引发的大量诉讼</div><div class="ncard-en">How courts are coping with a flood of AI-generated lawsuits</div></div>
+                  <div style="text-align:right"><div class="nsource">MIT Tech Review</div><div class="ntime">06-04 10:50</div></div>
+                </div>
+                <div class="nfoot"><span class="nverify">✓ 可信来源</span><span class="nlink">阅读原文 →</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEMO 3: 假新闻过滤 -->
+      <div class="demo-row">
+        <div class="demo-text">
+          <div class="demo-num">FEATURE 03</div>
+          <div class="demo-title">🛡️ 三层假新闻过滤</div>
+          <div class="demo-desc">新闻抓取后经过三道过滤，确保展示的每一条都来自可信来源、内容不重复、多源验证。过滤逻辑在后端 Python 运行，前端只拿到经过筛选的结果。</div>
+          <div class="demo-bullets">
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>第 1 层：域名白名单，只信任 techcrunch.com / theverge.com / openai.com / anthropic.com 等 18 个顶级媒体</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>第 2 层：标题相似度去重（difflib），同一故事不重复展示</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>第 3 层：多源计数，出现在 2+ 来源的故事额外标注"多源验证"</div>
+          </div>
+        </div>
+        <div>
+          <div class="app-frame" style="padding:14px">
+            <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #2a3045">🛡️ 新闻过滤流水线</div>
+            <div class="filter-explain">
+              <div class="filter-step">
+                <div class="filter-icon fi-blue">①</div>
+                <div>
+                  <div class="filter-title">域名白名单过滤</div>
+                  <div class="filter-desc">只保留来自 18 个可信域名的条目</div>
+                  <div class="filter-result">
+                    <span class="ftag-pass">techcrunch.com ✓</span>
+                    <span class="ftag-pass">openai.com ✓</span>
+                    <span class="ftag-pass">theverge.com ✓</span>
+                    <span class="ftag-fail">medium.com ✗</span>
+                    <span class="ftag-fail">twitter.com ✗</span>
+                    <span class="ftag-fail">reddit.com ✗</span>
+                  </div>
+                </div>
+              </div>
+              <div class="filter-step">
+                <div class="filter-icon fi-blue">②</div>
+                <div>
+                  <div class="filter-title">标题相似度去重（difflib）</div>
+                  <div class="filter-desc">相似度 &gt; 60% 的条目合并，只保留最早一条</div>
+                  <div class="filter-result">
+                    <span class="ftag-pass">"OpenAI 发布新模型" ✓ 保留</span>
+                    <span class="ftag-fail">"OpenAI 推出新 AI 模型" ✗ 去重</span>
+                  </div>
+                </div>
+              </div>
+              <div class="filter-step">
+                <div class="filter-icon fi-green">③</div>
+                <div>
+                  <div class="filter-title">多源验证标注</div>
+                  <div class="filter-desc">同一故事出现在 2+ 来源时标注"多源验证"</div>
+                  <div class="filter-result">
+                    <span class="ftag-pass">✓ 多源验证（TechCrunch + The Verge）</span>
+                    <span class="ftag-pass">✓ 可信来源（单源）</span>
+                  </div>
+                </div>
+              </div>
+              <div class="filter-step">
+                <div class="filter-icon fi-green">✓</div>
+                <div>
+                  <div class="filter-title">最终结果</div>
+                  <div class="filter-desc">6 个来源 ~90 条原始条目 → 过滤后约 17 条高质量新闻</div>
+                  <div class="filter-result">
+                    <span class="ftag-pass">抓取：~90 条</span>
+                    <span class="ftag-fail">过滤掉：~73 条</span>
+                    <span class="ftag-pass">保留：17 条 ✓</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEMO 4: 翻译 + 数据流 -->
+      <div class="demo-row reverse">
+        <div class="demo-text">
+          <div class="demo-num">FEATURE 04</div>
+          <div class="demo-title">🌏 中英双语 + 1 小时缓存</div>
+          <div class="demo-desc">抓取到的英文新闻通过 googletrans 翻译成中文，标题和摘要都会被翻译。翻译结果存入内存缓存，1 小时内不重复请求，刷新按钮可手动清除缓存立即重新抓取。</div>
+          <div class="demo-bullets">
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>标题中文在上（字体大），英文原标题在下（小字斜体）</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>摘要默认显示中文，鼠标悬停展开英文原文</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>6 个来源并发抓取，总用时约 15-30 秒</div>
+            <div class="demo-bullet"><span class="demo-bullet-dot">▸</span>缓存 TTL 1 小时，再次打开秒速加载</div>
+          </div>
+        </div>
+        <div>
+          <div class="app-frame" style="padding:14px">
+            <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #2a3045">🌏 中英双语对照展示</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="background:#161a24;border:1px solid #2a3045;border-radius:8px;padding:10px 12px">
+                <div style="font-size:11px;font-weight:600;color:#e2e8f0;margin-bottom:3px">Meta 借鉴特斯拉的策略，在帐篷里建数据中心</div>
+                <div style="font-size:9px;color:#5a6475;font-style:italic;margin-bottom:6px">Meta steals a tactic from Tesla and builds data centers in tents</div>
+                <div style="font-size:10px;color:#8892a4;margin-bottom:3px">Meta 可能已经找到了一种削减其庞大数据中心费用的方法：帐篷。</div>
+                <div style="font-size:9px;color:#5a6475;font-style:italic;border-left:2px solid #2a3045;padding-left:8px">Meta may have found one way to slash its massive data center bill: tents.</div>
+              </div>
+              <div style="background:#161a24;border:1px solid #2a3045;border-radius:8px;padding:10px 12px">
+                <div style="font-size:11px;font-weight:600;color:#e2e8f0;margin-bottom:3px">Alphabet 破纪录为谷歌 AI 业务筹集了 850 亿美元</div>
+                <div style="font-size:9px;color:#5a6475;font-style:italic;margin-bottom:6px">Alphabet's record-breaking $85B raise for Google's AI business</div>
+                <div style="font-size:10px;color:#8892a4;margin-bottom:3px">投资者已经准备好大吃特吃 AI 相关产品。</div>
+                <div style="font-size:9px;color:#5a6475;font-style:italic;border-left:2px solid #2a3045;padding-left:8px">Investors are ready to chow down on AI-related offerings.</div>
+              </div>
+              <div style="background:#1e2433;border:1px dashed #3a4560;border-radius:8px;padding:10px 12px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                  <div style="font-size:10px;font-weight:600;color:#e2e8f0">缓存状态</div>
+                  <div style="font-size:9px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:#34d399;padding:2px 7px;border-radius:5px">✓ 已缓存</div>
+                </div>
+                <div style="display:flex;gap:12px;font-size:9px;color:#8892a4">
+                  <span>TTL: 1 小时</span>
+                  <span>已缓存: 17 条</span>
+                  <span>上次更新: 17:34</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-</div>
+</section>
 
-<!-- FEATURES -->
-<section id="features">
-  <div class="section-inner">
-    <div class="section-label">核心功能</div>
-    <h2 class="section-title">两个 Tab，<br>一个完整的 AI 情报站</h2>
-    <p class="section-sub">自动化的新闻聚合 + 可交互的产品对比，每天打开就能了解 AI 世界在发生什么。</p>
+<!-- FEATURES SUMMARY -->
+<section id="features" style="background:var(--surface);border-top:1px solid var(--border)">
+  <div class="inner">
+    <div class="label">核心特性</div>
+    <h2 class="sec-title">一句话总结每个功能</h2>
     <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">📡</div>
-        <div class="feature-title">多源 RSS 自动抓取</div>
-        <div class="feature-desc">同时抓取 TechCrunch AI、The Verge、VentureBeat、MIT Tech Review、OpenAI Blog、Anthropic Blog 等 6 个顶级来源，并发请求节省时间。</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🛡️</div>
-        <div class="feature-title">假新闻过滤机制</div>
-        <div class="feature-desc">域名白名单准入、多源交叉验证（同一新闻出现在 2+ 来源才通过）、标题相似度去重（difflib），层层过滤不可信内容。</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🌏</div>
-        <div class="feature-title">中英双语对照</div>
-        <div class="feature-desc">使用 googletrans 将标题和摘要实时翻译成中文，界面展示中文大标题 + 英文原文对照，翻译结果缓存 1 小时避免重复请求。</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔊</div>
-        <div class="feature-title">语音播报 + 声音选择</div>
-        <div class="feature-desc">点击播放即可听 AI 朗读所有新闻，支持选择系统中文声音（优先列出中文语音），可调节语速和音调，朗读时当前新闻卡片自动高亮滚动。</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <div class="feature-title">AI 产品能力排行</div>
-        <div class="feature-desc">按「底层大模型 → 对话产品 → 编程工具 → Agent 平台 → 本地框架 → 图像/视频/语音」8 层分类，S/A/B 能力 Tier 评级，涵盖 40+ 款主流产品。</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🏷️</div>
-        <div class="feature-title">NEW 动态角标</div>
-        <div class="feature-desc">自动将今日新闻与产品关键词匹配，有相关新闻的产品实时显示红色 NEW 角标，并直接展示相关新闻链接，一眼看到行业动态。</div>
-      </div>
+      <div class="fcard"><div class="fcard-icon">📡</div><div class="fcard-title">多源并发抓取</div><div class="fcard-desc">6 个顶级 AI 媒体 RSS 同时抓取，Python 多线程处理，第一次加载约 15-30 秒，之后缓存秒速响应。</div></div>
+      <div class="fcard"><div class="fcard-icon">🛡️</div><div class="fcard-title">三层假新闻过滤</div><div class="fcard-desc">域名白名单 → difflib 标题去重 → 多源计数验证，~90 条原始条目过滤为 ~17 条高质量新闻。</div></div>
+      <div class="fcard"><div class="fcard-icon">🌏</div><div class="fcard-title">中英双语对照</div><div class="fcard-desc">googletrans 免费翻译，标题和摘要全部汉化，界面同时保留英文原文供对照，悬停展开。</div></div>
+      <div class="fcard"><div class="fcard-icon">🔊</div><div class="fcard-title">语音播报</div><div class="fcard-desc">浏览器原生 Web Speech API，优先调取系统中文语音，朗读时当前卡片高亮，支持语速/音调调节。</div></div>
+      <div class="fcard"><div class="fcard-icon">📊</div><div class="fcard-title">8 类 40+ 产品排行</div><div class="fcard-desc">参照「AI 完整生态图」按层次分类，S/A/B 三级能力评分，覆盖大模型/编程/Agent/图像/视频/语音。</div></div>
+      <div class="fcard"><div class="fcard-icon">🏷️</div><div class="fcard-title">NEW 动态角标</div><div class="fcard-desc">产品关键词与当日新闻实时匹配，命中则显示红色呼吸动画 NEW 角标，直接展示相关新闻链接。</div></div>
     </div>
   </div>
 </section>
 
-<!-- DATA FLOW -->
-<section style="padding-top: 0">
-  <div class="section-inner">
-    <div class="section-label">数据流</div>
-    <h2 class="section-title">从新闻源到耳朵</h2>
-    <div class="flow">
-      <div class="flow-node">
-        <div class="flow-node-icon">📡</div>
-        <div class="flow-node-name">RSS 源</div>
-        <div class="flow-node-sub">6 个可信来源</div>
-      </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-node">
-        <div class="flow-node-icon">🛡️</div>
-        <div class="flow-node-name">过滤 + 去重</div>
-        <div class="flow-node-sub">域名白名单 · difflib</div>
-      </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-node">
-        <div class="flow-node-icon">🌏</div>
-        <div class="flow-node-name">翻译</div>
-        <div class="flow-node-sub">googletrans → 中文</div>
-      </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-node">
-        <div class="flow-node-icon">💾</div>
-        <div class="flow-node-name">内存缓存</div>
-        <div class="flow-node-sub">TTL 1 小时</div>
-      </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-node">
-        <div class="flow-node-icon">🖥️</div>
-        <div class="flow-node-name">前端展示</div>
-        <div class="flow-node-sub">中英双语 + NEW</div>
-      </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-node">
-        <div class="flow-node-icon">🔊</div>
-        <div class="flow-node-name">语音播报</div>
-        <div class="flow-node-sub">Web Speech API</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PLAN / TIMELINE -->
+<!-- PLAN -->
 <section id="plan" class="plan-section">
-  <div class="section-inner">
-    <div class="section-label">设计思路</div>
-    <h2 class="section-title">怎么做出来的</h2>
-    <p class="section-sub">从一个想法到可用的桌面 App，整个过程用 Claude Code 完成，大约花了 30 分钟。</p>
+  <div class="inner">
+    <div class="label">设计思路</div>
+    <h2 class="sec-title">从想法到 App，全程 Claude Code</h2>
+    <p class="sec-sub">整个项目在 Claude Code 里完成，包括需求拆解、技术选型、代码编写、调试。</p>
     <div class="timeline">
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div>
-          <div class="tl-num">STEP 01</div>
-          <div class="tl-title">明确需求与技术方案</div>
-          <div class="tl-desc">需要一个每日 AI 新闻 App：Tab 1 做产品横向对比并标注新 NEWS，Tab 2 做日更新闻并支持语音播报。系统没有 Node.js，选择 Python Flask 本地服务器 + HTML/CSS/JS 前端，在浏览器中展示，Web Speech API 负责 TTS，无需安装额外桌面框架。</div>
-          <div class="tl-tags">
-            <span class="tl-tag">Python Flask</span>
-            <span class="tl-tag">无 Node.js</span>
-            <span class="tl-tag">单页应用</span>
-          </div>
-        </div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div>
-          <div class="tl-num">STEP 02</div>
-          <div class="tl-title">新闻后端：抓取 + 过滤 + 翻译</div>
-          <div class="tl-desc">用多线程并发抓取 6 个 RSS 源，对返回的条目做三层过滤：① 域名白名单（只信任 techcrunch.com / theverge.com / openai.com 等）②  多源交叉验证（单一来源的故事可信度低）③ difflib 标题相似度去重（同一新闻不重复展示）。翻译用 googletrans 免费库，结果缓存在内存中，1 小时 TTL。</div>
-          <div class="tl-tags">
-            <span class="tl-tag">RSS + feedparser</span>
-            <span class="tl-tag">域名白名单</span>
-            <span class="tl-tag">difflib 去重</span>
-            <span class="tl-tag">googletrans</span>
-            <span class="tl-tag">内存缓存</span>
-          </div>
-        </div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div>
-          <div class="tl-num">STEP 03</div>
-          <div class="tl-title">产品数据库设计</div>
-          <div class="tl-desc">参考用户提供的「AI 完整生态图」，将产品按层次划分：底层大模型 → 对话产品 → 编程工具 → Agent 平台 → 本地框架，再追加图像/视频/语音 3 个创作类分类，共 8 类 40+ 产品。每个产品配置 keywords 数组，后端自动将今日新闻标题与 keywords 匹配，命中则返回 has_news: true 和相关新闻链接。</div>
-          <div class="tl-tags">
-            <span class="tl-tag">8 层分类</span>
-            <span class="tl-tag">40+ 产品</span>
-            <span class="tl-tag">关键词匹配</span>
-            <span class="tl-tag">动态 NEW 角标</span>
-          </div>
-        </div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div>
-          <div class="tl-num">STEP 04</div>
-          <div class="tl-title">前端界面：深色科技风格</div>
-          <div class="tl-desc">纯 HTML/CSS/JS 单页，无框架依赖。S/A/B Tier 徽章用渐变色区分，NEW 角标带呼吸动画，新闻卡片在朗读时自动高亮。语音控件使用 window.speechSynthesis，优先列出系统中文声音，语速/音调滑块实时生效。</div>
-          <div class="tl-tags">
-            <span class="tl-tag">纯原生 CSS</span>
-            <span class="tl-tag">Web Speech API</span>
-            <span class="tl-tag">深色设计</span>
-            <span class="tl-tag">无依赖前端</span>
-          </div>
-        </div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div>
-          <div class="tl-num">STEP 05</div>
-          <div class="tl-title">一键启动脚本</div>
-          <div class="tl-desc">launch.py 自动做三件事：pip install 所有依赖 → 启动 Flask 服务器监听 7788 端口 → 1.5 秒后用 webbrowser.open 自动打开浏览器。用户只需要在终端运行一行命令。</div>
-          <div class="tl-tags">
-            <span class="tl-tag">自动安装依赖</span>
-            <span class="tl-tag">自动开浏览器</span>
-            <span class="tl-tag">一行启动</span>
-          </div>
-        </div>
-      </div>
+      <div class="tl-item"><div class="tl-dot"></div><div><div class="tl-num">STEP 01</div><div class="tl-title">需求 → 技术方案</div><div class="tl-desc">需要播放 AI 新闻的桌面 App，系统无 Node.js，选 Python Flask 本地服务器 + HTML/CSS/JS 前端，Web Speech API 负责 TTS，浏览器里当"桌面窗口"用。</div><div class="tl-tags"><span class="tl-tag">Python Flask</span><span class="tl-tag">无需 Node.js</span><span class="tl-tag">Web Speech API</span></div></div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div><div class="tl-num">STEP 02</div><div class="tl-title">新闻后端：抓取 + 过滤 + 翻译</div><div class="tl-desc">多线程并发抓 6 个 RSS 源，三层过滤（域名白名单 + difflib 去重 + 多源验证），googletrans 翻译结果内存缓存 1 小时。</div><div class="tl-tags"><span class="tl-tag">feedparser</span><span class="tl-tag">difflib</span><span class="tl-tag">googletrans</span><span class="tl-tag">内存缓存</span></div></div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div><div class="tl-num">STEP 03</div><div class="tl-title">产品数据库 — 参照用户提供的生态图</div><div class="tl-desc">用户提供了「AI 完整生态图」HTML 文件，包含底层大模型/对话产品/编程工具/Agent 平台/本地框架五层结构。以此为基础扩展为 8 类，追加图像/视频/语音，每个产品配 keywords 数组实现新闻联动。</div><div class="tl-tags"><span class="tl-tag">8 层分类</span><span class="tl-tag">40+ 产品</span><span class="tl-tag">关键词匹配</span></div></div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div><div class="tl-num">STEP 04</div><div class="tl-title">前端 — 深色科技风格</div><div class="tl-desc">纯原生 HTML/CSS/JS，无框架。S/A/B 渐变徽章，NEW 呼吸动画，朗读高亮，声音列表优先中文语音。修复了 speechSynthesis 未初始化导致 JS 报错的 bug。</div><div class="tl-tags"><span class="tl-tag">原生 CSS</span><span class="tl-tag">深色设计</span><span class="tl-tag">Bug 修复</span></div></div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div><div class="tl-num">STEP 05</div><div class="tl-title">一键启动 + GitHub 部署</div><div class="tl-desc">launch.py 自动 pip install → 启动 Flask → 打开浏览器。项目推送到 GitHub，docs/ 目录作为 GitHub Pages 发布本介绍页。</div><div class="tl-tags"><span class="tl-tag">自动安装依赖</span><span class="tl-tag">GitHub Pages</span><span class="tl-tag">一行启动</span></div></div></div>
     </div>
   </div>
 </section>
 
-<!-- TECH STACK -->
+<!-- STACK -->
 <section id="stack">
-  <div class="section-inner">
-    <div class="section-label">技术栈</div>
-    <h2 class="section-title">用到的技术</h2>
-    <p class="section-sub">尽量减少依赖，核心只需 4 个 Python 包，前端零框架。</p>
+  <div class="inner">
+    <div class="label">技术栈</div>
+    <h2 class="sec-title">极简依赖</h2>
+    <p class="sec-sub">核心只需 4 个 Python 包，前端零框架，macOS 开箱即用。</p>
     <div class="stack-grid">
-      <div class="stack-item">
-        <div class="stack-icon">🐍</div>
-        <div>
-          <div class="stack-name">Python 3</div>
-          <div class="stack-role">运行环境（系统自带）</div>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">⚗️</div>
-        <div>
-          <div class="stack-name">Flask</div>
-          <div class="stack-role">本地 HTTP 服务器</div>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">📡</div>
-        <div>
-          <div class="stack-name">feedparser</div>
-          <div class="stack-role">RSS 解析</div>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">🌐</div>
-        <div>
-          <div class="stack-name">googletrans</div>
-          <div class="stack-role">中文翻译（免费）</div>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">🔊</div>
-        <div>
-          <div class="stack-name">Web Speech API</div>
-          <div class="stack-role">浏览器原生 TTS</div>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">🎨</div>
-        <div>
-          <div class="stack-name">原生 CSS / JS</div>
-          <div class="stack-role">前端，零框架依赖</div>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">📁</div>
-        <div>
-          <div class="stack-name">JSON</div>
-          <div class="stack-role">产品数据库</div>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">⚡</div>
-        <div>
-          <div class="stack-name">Claude Code</div>
-          <div class="stack-role">构建工具（本项目）</div>
-        </div>
-      </div>
+      <div class="sitem"><div class="sitem-icon">🐍</div><div><div class="sitem-name">Python 3</div><div class="sitem-role">运行环境（系统自带）</div></div></div>
+      <div class="sitem"><div class="sitem-icon">⚗️</div><div><div class="sitem-name">Flask</div><div class="sitem-role">本地 HTTP 服务器</div></div></div>
+      <div class="sitem"><div class="sitem-icon">📡</div><div><div class="sitem-name">feedparser</div><div class="sitem-role">RSS 解析</div></div></div>
+      <div class="sitem"><div class="sitem-icon">🌐</div><div><div class="sitem-name">googletrans</div><div class="sitem-role">中文翻译（免费）</div></div></div>
+      <div class="sitem"><div class="sitem-icon">🔊</div><div><div class="sitem-name">Web Speech API</div><div class="sitem-role">浏览器原生 TTS</div></div></div>
+      <div class="sitem"><div class="sitem-icon">🎨</div><div><div class="sitem-name">原生 CSS/JS</div><div class="sitem-role">前端，零框架</div></div></div>
+      <div class="sitem"><div class="sitem-icon">⚡</div><div><div class="sitem-name">Claude Code</div><div class="sitem-role">构建工具（本项目）</div></div></div>
     </div>
   </div>
 </section>
 
 <!-- INSTALL -->
-<section id="install" style="background: var(--surface); border-top: 1px solid var(--border);">
-  <div class="section-inner">
-    <div class="section-label">快速启动</div>
-    <h2 class="section-title">三步跑起来</h2>
-    <p class="section-sub">只需要 macOS 自带的 Python 3，无需安装 Node.js 或其他运行时。</p>
+<section id="install" style="background:var(--surface);border-top:1px solid var(--border)">
+  <div class="inner">
+    <div class="label">快速启动</div>
+    <h2 class="sec-title">三步跑起来</h2>
+    <p class="sec-sub">只需要 macOS 自带的 Python 3，无需安装 Node.js。</p>
     <div class="install-block">
-      <div class="code-line">
-        <span class="code-prompt">$</span>
-        <code class="code-cmd">git clone https://github.com/yusizou-commits/ai-news-app.git</code>
-        <span class="code-comment"># 下载代码</span>
-      </div>
-      <div class="code-line">
-        <span class="code-prompt">$</span>
-        <code class="code-cmd">cd ai-news-app</code>
-        <span class="code-comment"># 进入目录</span>
-      </div>
-      <div class="code-line">
-        <span class="code-prompt">$</span>
-        <code class="code-cmd">python3 launch.py</code>
-        <span class="code-comment"># 自动安装依赖、启动服务器、打开浏览器</span>
-      </div>
+      <div class="code-line"><span class="code-prompt">$</span><code class="code-cmd">git clone https://github.com/yusizou-commits/ai-news-app.git</code><span class="code-comment"># 下载代码</span></div>
+      <div class="code-line"><span class="code-prompt">$</span><code class="code-cmd">cd ai-news-app</code><span class="code-comment"># 进入目录</span></div>
+      <div class="code-line"><span class="code-prompt">$</span><code class="code-cmd">python3 launch.py</code><span class="code-comment"># 自动安装依赖、启动服务器、打开浏览器</span></div>
     </div>
-    <p style="margin-top: 20px; font-size: 13px; color: var(--text3);">
-      ⚠️ 终端窗口需保持开启。第一次加载新闻约需 15-30 秒（需联网翻译）。
-    </p>
+    <p style="margin-top:20px;font-size:13px;color:var(--text3)">⚠️ 终端窗口需保持开启。第一次加载新闻约需 15-30 秒（需联网翻译）。</p>
   </div>
 </section>
 
 <footer>
-  <p>
-    Built with ⚡ <a href="https://claude.ai/code" target="_blank">Claude Code</a> ·
-    <a href="https://github.com/yusizou-commits/ai-news-app" target="_blank">GitHub</a>
-  </p>
+  <p>Built with ⚡ <a href="https://claude.ai/code" target="_blank">Claude Code</a> · <a href="https://github.com/yusizou-commits/ai-news-app" target="_blank">GitHub</a></p>
 </footer>
 
 </body>
