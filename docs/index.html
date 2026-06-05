@@ -623,6 +623,100 @@ footer a { color:var(--text2); text-decoration:none; }
     <div class="label">设计思路</div>
     <h2 class="sec-title">从想法到 App，全程 Claude Code</h2>
     <p class="sec-sub">整个项目在 Claude Code 里完成，包括需求拆解、技术选型、代码编写、调试。</p>
+
+    <!-- PM FLOW DIAGRAM -->
+    <div style="margin:48px 0 64px;overflow-x:auto">
+      <div style="min-width:680px">
+
+        <!-- Row 1: 数据怎么来的 -->
+        <div style="text-align:center;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#52525b">① 新闻从哪来</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:6px">
+          <!-- Sources -->
+          <div style="background:#1a1f35;border:1px solid #3040a0;border-radius:12px;padding:14px 16px;text-align:center;min-width:120px">
+            <div style="font-size:22px;margin-bottom:4px">📡</div>
+            <div style="font-size:12px;font-weight:700;color:#e2e8f0">6 个媒体</div>
+            <div style="font-size:10px;color:#8892a4;margin-top:2px">TechCrunch · OpenAI<br>Verge · MIT · 等</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;padding:0 8px">
+            <div style="font-size:18px;color:#3a4560">→</div>
+            <div style="font-size:9px;color:#52525b;white-space:nowrap">自动抓取</div>
+          </div>
+          <!-- Filter -->
+          <div style="background:#2d1020;border:1px solid #8a2060;border-radius:12px;padding:14px 16px;text-align:center;min-width:120px">
+            <div style="font-size:22px;margin-bottom:4px">🛡️</div>
+            <div style="font-size:12px;font-weight:700;color:#e2e8f0">过滤假新闻</div>
+            <div style="font-size:10px;color:#8892a4;margin-top:2px">~90 条→只保留<br>~17 条可信内容</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;padding:0 8px">
+            <div style="font-size:18px;color:#3a4560">→</div>
+            <div style="font-size:9px;color:#52525b;white-space:nowrap">去掉重复和不可信</div>
+          </div>
+          <!-- Translate -->
+          <div style="background:#102030;border:1px solid #205880;border-radius:12px;padding:14px 16px;text-align:center;min-width:120px">
+            <div style="font-size:22px;margin-bottom:4px">🌐</div>
+            <div style="font-size:12px;font-weight:700;color:#e2e8f0">自动翻译</div>
+            <div style="font-size:10px;color:#8892a4;margin-top:2px">英文原文<br>→ 中文摘要</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;padding:0 8px">
+            <div style="font-size:18px;color:#3a4560">→</div>
+            <div style="font-size:9px;color:#52525b;white-space:nowrap">记住 1 小时</div>
+          </div>
+          <!-- Cache -->
+          <div style="background:#1e2010;border:1px solid #507030;border-radius:12px;padding:14px 16px;text-align:center;min-width:120px">
+            <div style="font-size:22px;margin-bottom:4px">💾</div>
+            <div style="font-size:12px;font-weight:700;color:#e2e8f0">暂存结果</div>
+            <div style="font-size:10px;color:#8892a4;margin-top:2px">再次打开<br>秒速加载</div>
+          </div>
+        </div>
+
+        <!-- Connector down -->
+        <div style="display:flex;justify-content:center;margin:4px 0">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div style="width:1px;height:28px;background:linear-gradient(to bottom,#3a4560,#6366f1)"></div>
+            <div style="font-size:16px;color:#6366f1;line-height:1">▼</div>
+            <div style="font-size:9px;color:#52525b">展示给你</div>
+          </div>
+        </div>
+
+        <!-- Row 2: 用户看到什么 -->
+        <div style="text-align:center;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#52525b">② 你看到什么</span>
+        </div>
+        <div style="display:flex;align-items:stretch;justify-content:center;gap:16px">
+          <!-- Tab 1 -->
+          <div style="background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(139,92,246,.06));border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:20px 24px;flex:1;max-width:300px">
+            <div style="font-size:22px;margin-bottom:8px">📊</div>
+            <div style="font-size:14px;font-weight:700;color:#e2e8f0;margin-bottom:6px">Tab 1 — 产品排行</div>
+            <div style="font-size:12px;color:#a1a1aa;line-height:1.7">
+              40+ 款 AI 产品按类别对比<br>
+              <span style="color:#818cf8">S / A / B</span> 能力等级打分<br>
+              今日有新闻 → 亮起 <span style="background:#ef4444;color:#fff;font-size:10px;padding:1px 5px;border-radius:3px;font-weight:700">NEW</span>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div style="display:flex;align-items:center;padding:0 4px">
+            <div style="width:1px;height:60px;background:#27272a"></div>
+          </div>
+
+          <!-- Tab 2 -->
+          <div style="background:linear-gradient(135deg,rgba(52,211,153,.1),rgba(16,185,129,.05));border:1px solid rgba(52,211,153,.3);border-radius:14px;padding:20px 24px;flex:1;max-width:300px">
+            <div style="font-size:22px;margin-bottom:8px">📰</div>
+            <div style="font-size:14px;font-weight:700;color:#e2e8f0;margin-bottom:6px">Tab 2 — 今日新闻</div>
+            <div style="font-size:12px;color:#a1a1aa;line-height:1.7">
+              中文标题 + 英文原文对照<br>
+              点击 <span style="color:#34d399">▶ 播放</span> → 语音朗读全部新闻<br>
+              可选声音、调节语速
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- END FLOW DIAGRAM -->
+
     <div class="timeline">
       <div class="tl-item"><div class="tl-dot"></div><div><div class="tl-num">STEP 01</div><div class="tl-title">需求 → 技术方案</div><div class="tl-desc">需要播放 AI 新闻的桌面 App，系统无 Node.js，选 Python Flask 本地服务器 + HTML/CSS/JS 前端，Web Speech API 负责 TTS，浏览器里当"桌面窗口"用。</div><div class="tl-tags"><span class="tl-tag">Python Flask</span><span class="tl-tag">无需 Node.js</span><span class="tl-tag">Web Speech API</span></div></div></div>
       <div class="tl-item"><div class="tl-dot"></div><div><div class="tl-num">STEP 02</div><div class="tl-title">新闻后端：抓取 + 过滤 + 翻译</div><div class="tl-desc">多线程并发抓 6 个 RSS 源，三层过滤（域名白名单 + difflib 去重 + 多源验证），googletrans 翻译结果内存缓存 1 小时。</div><div class="tl-tags"><span class="tl-tag">feedparser</span><span class="tl-tag">difflib</span><span class="tl-tag">googletrans</span><span class="tl-tag">内存缓存</span></div></div></div>
