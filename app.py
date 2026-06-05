@@ -214,6 +214,13 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/flow")
+def flow():
+    flow_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "flow.html")
+    with open(flow_path, encoding="utf-8") as f:
+        return f.read()
+
+
 @app.route("/api/news")
 def api_news():
     try:

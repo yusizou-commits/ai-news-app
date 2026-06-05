@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 日报 — 系统架构图</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, "PingFang SC", sans-serif;
+  background: #09090b;
+  color: #e2e8f0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+h1 {
+  font-size: 20px; font-weight: 700;
+  margin-bottom: 6px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.sub { font-size: 13px; color: #52525b; margin-bottom: 32px; }
+.diagram { width: 100%; max-width: 1060px; }
+
+/* ── Node styles ── */
+.node {
+  rx: 10; ry: 10;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,.5));
+}
+.node-user     { fill: #1e2433; stroke: #3b4a6b; stroke-width: 1.5; }
+.node-frontend { fill: #1a1f35; stroke: #4c5fd5; stroke-width: 1.5; }
+.node-flask    { fill: #1e2d1e; stroke: #3a7a3a; stroke-width: 1.5; }
+.node-cache    { fill: #2d2010; stroke: #8a6030; stroke-width: 1.5; }
+.node-filter   { fill: #2d1020; stroke: #8a2060; stroke-width: 1.5; }
+.node-trans    { fill: #102030; stroke: #205880; stroke-width: 1.5; }
+.node-rss      { fill: #1a1a2e; stroke: #4444aa; stroke-width: 1.5; }
+.node-tts      { fill: #1e2820; stroke: #406840; stroke-width: 1.5; }
+.node-products { fill: #201828; stroke: #604880; stroke-width: 1.5; }
+
+/* Text */
+.t-label { font-size: 12px; font-weight: 700; fill: #f0f0ff; }
+.t-sub   { font-size: 10px; fill: #8892a4; }
+.t-code  { font-family: "SF Mono", monospace; font-size: 9px; fill: #a8b8d0; }
+.t-accent { font-size: 10px; fill: #818cf8; }
+.t-green  { font-size: 10px; fill: #34d399; }
+.t-yellow { font-size: 10px; fill: #fbbf24; }
+.t-red    { font-size: 10px; fill: #f87171; }
+.t-pink   { font-size: 10px; fill: #c084fc; }
+
+/* Arrows */
+.arrow { stroke: #3a4560; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+.arrow-accent { stroke: #6366f1; stroke-width: 1.5; fill: none; stroke-dasharray: 4 3; marker-end: url(#arrowhead-accent); }
+.arrow-green  { stroke: #34d399; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead-green); }
+.arrow-yellow { stroke: #fbbf24; stroke-width: 1.2; fill: none; stroke-dasharray: 3 3; marker-end: url(#arrowhead-yellow); }
+.arrow-pink   { stroke: #c084fc; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead-pink); }
+
+/* Section labels */
+.section-bg { fill: rgba(255,255,255,.02); rx: 12; ry: 12; stroke: #27272a; stroke-width: 1; }
+.section-label { font-size: 11px; font-weight: 700; fill: #52525b; letter-spacing: 1px; text-transform: uppercase; }
+
+/* Badge */
+.badge { rx: 6; ry: 6; }
+.badge-blue   { fill: rgba(99,102,241,.15); stroke: rgba(99,102,241,.4); stroke-width: 1; }
+.badge-green  { fill: rgba(52,211,153,.12); stroke: rgba(52,211,153,.4); stroke-width: 1; }
+.badge-yellow { fill: rgba(251,191,36,.12); stroke: rgba(251,191,36,.4); stroke-width: 1; }
+.badge-pink   { fill: rgba(192,132,252,.12); stroke: rgba(192,132,252,.4); stroke-width: 1; }
+</style>
+</head>
+<body>
+<h1>⚡ AI 日报 — 系统架构与数据流</h1>
+<p class="sub">从 RSS 源到耳朵的完整链路</p>
+
+<svg class="diagram" viewBox="0 0 1060 840" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+    <polygon points="0 0, 8 3, 0 6" fill="#3a4560"/>
+  </marker>
+  <marker id="arrowhead-accent" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+    <polygon points="0 0, 8 3, 0 6" fill="#6366f1"/>
+  </marker>
+  <marker id="arrowhead-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+    <polygon points="0 0, 8 3, 0 6" fill="#34d399"/>
+  </marker>
+  <marker id="arrowhead-yellow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+    <polygon points="0 0, 8 3, 0 6" fill="#fbbf24"/>
+  </marker>
+  <marker id="arrowhead-pink" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+    <polygon points="0 0, 8 3, 0 6" fill="#c084fc"/>
+  </marker>
+</defs>
+
+<!-- ══ SECTION: 用户层 ══ -->
+<rect class="section-bg" x="8" y="8" width="1044" height="110"/>
+<text class="section-label" x="24" y="30">用户层</text>
+
+<!-- User Node -->
+<rect class="node node-user" x="40" y="42" width="140" height="60"/>
+<text class="t-label" x="110" y="67" text-anchor="middle">👤 用户</text>
+<text class="t-sub" x="110" y="83" text-anchor="middle">打开浏览器</text>
+<text class="t-code" x="110" y="96" text-anchor="middle">localhost:7788</text>
+
+<!-- Frontend Node -->
+<rect class="node node-frontend" x="240" y="36" width="200" height="72"/>
+<text class="t-label" x="340" y="60" text-anchor="middle">🖥️ 前端 (index.html)</text>
+<text class="t-sub" x="340" y="76" text-anchor="middle">原生 HTML / CSS / JS</text>
+<text class="t-accent" x="340" y="91" text-anchor="middle">Tab 1 产品排行 · Tab 2 新闻</text>
+<rect class="badge badge-blue" x="247" y="96" width="90" height="16"/>
+<text class="t-accent" x="292" y="108" text-anchor="middle">fetch /api/news</text>
+<rect class="badge badge-pink" x="343" y="96" width="90" height="16"/>
+<text class="t-pink" x="388" y="108" text-anchor="middle">fetch /api/products</text>
+
+<!-- TTS Node -->
+<rect class="node node-tts" x="480" y="42" width="180" height="60"/>
+<text class="t-label" x="570" y="65" text-anchor="middle">🔊 Web Speech API</text>
+<text class="t-sub" x="570" y="81" text-anchor="middle">浏览器原生 TTS</text>
+<text class="t-green" x="570" y="94" text-anchor="middle">系统中文语音 · 语速/音调</text>
+
+<!-- User → Frontend -->
+<line class="arrow" x1="180" y1="72" x2="238" y2="72"/>
+<text class="t-sub" x="209" y="67" text-anchor="middle">打开</text>
+
+<!-- Frontend → TTS -->
+<line class="arrow" x1="440" y1="72" x2="478" y2="72"/>
+<text class="t-sub" x="459" y="67" text-anchor="middle">朗读</text>
+
+
+<!-- ══ SECTION: 服务层 ══ -->
+<rect class="section-bg" x="8" y="132" width="1044" height="120"/>
+<text class="section-label" x="24" y="154">服务层 — Flask 后端 (app.py)</text>
+
+<!-- Flask Router -->
+<rect class="node node-flask" x="40" y="162" width="200" height="74"/>
+<text class="t-label" x="140" y="186" text-anchor="middle">⚗️ Flask Router</text>
+<text class="t-code" x="140" y="202" text-anchor="middle">GET /api/news</text>
+<text class="t-code" x="140" y="215" text-anchor="middle">GET /api/products</text>
+<text class="t-code" x="140" y="228" text-anchor="middle">GET /api/refresh</text>
+
+<!-- Cache Node -->
+<rect class="node node-cache" x="300" y="162" width="180" height="74"/>
+<text class="t-label" x="390" y="184" text-anchor="middle">💾 内存缓存</text>
+<text class="t-sub" x="390" y="200" text-anchor="middle">dict + timestamp</text>
+<rect class="badge badge-green" x="308" y="207" width="74" height="16"/>
+<text class="t-green" x="345" y="219" text-anchor="middle">HIT → 秒返回</text>
+<rect class="badge badge-yellow" x="388" y="207" width="84" height="16"/>
+<text class="t-yellow" x="430" y="219" text-anchor="middle">MISS → 抓取</text>
+<text class="t-sub" x="390" y="233" text-anchor="middle">TTL = 1 小时</text>
+
+<!-- Products DB -->
+<rect class="node node-products" x="540" y="162" width="200" height="74"/>
+<text class="t-label" x="640" y="184" text-anchor="middle">📁 products.json</text>
+<text class="t-sub" x="640" y="200" text-anchor="middle">8 类 · 40+ 产品</text>
+<text class="t-sub" x="640" y="213" text-anchor="middle">keywords 关键词数组</text>
+<text class="t-pink" x="640" y="228" text-anchor="middle">匹配 → has_news: true</text>
+
+<!-- Frontend → Flask (down arrow) -->
+<line class="arrow-accent" x1="290" y1="118" x2="140" y2="160"/>
+<line class="arrow-pink" x1="390" y1="118" x2="640" y2="160"/>
+
+<!-- Flask → Cache -->
+<line class="arrow" x1="240" y1="200" x2="298" y2="200"/>
+<text class="t-sub" x="269" y="195" text-anchor="middle">查询</text>
+
+<!-- Flask ← Cache (response) -->
+<line class="arrow-green" x1="298" y1="210" x2="240" y2="210"/>
+
+<!-- Products → Flask (return) -->
+<line class="arrow-pink" x1="540" y1="195" x2="242" y2="195"/>
+
+
+<!-- ══ SECTION: 数据处理层 ══ -->
+<rect class="section-bg" x="8" y="268" width="1044" height="280"/>
+<text class="section-label" x="24" y="290">数据处理层 — 抓取 · 过滤 · 翻译（缓存 MISS 时触发）</text>
+
+<!-- STEP label row -->
+<text class="t-yellow" x="80" y="314" text-anchor="middle" font-size="11" font-weight="700">① 并发抓取</text>
+<text class="t-red" x="340" y="314" text-anchor="middle" font-size="11" font-weight="700">② 三层过滤</text>
+<text class="t-accent" x="640" y="314" text-anchor="middle" font-size="11" font-weight="700">③ 翻译</text>
+<text class="t-green" x="870" y="314" text-anchor="middle" font-size="11" font-weight="700">④ 写入缓存</text>
+
+<!-- RSS Sources group -->
+<rect x="20" y="322" width="200" height="210" rx="10" ry="10" fill="rgba(68,68,170,.06)" stroke="#2a2a60" stroke-width="1" stroke-dasharray="4 3"/>
+<text class="t-accent" x="120" y="340" text-anchor="middle" font-size="10">6 个 RSS 源（多线程并发）</text>
+
+<rect class="node node-rss" x="30" y="348" width="180" height="24"/>
+<text class="t-sub" x="120" y="364" text-anchor="middle">📡 TechCrunch AI</text>
+
+<rect class="node node-rss" x="30" y="378" width="180" height="24"/>
+<text class="t-sub" x="120" y="394" text-anchor="middle">📡 The Verge</text>
+
+<rect class="node node-rss" x="30" y="408" width="180" height="24"/>
+<text class="t-sub" x="120" y="424" text-anchor="middle">📡 VentureBeat AI</text>
+
+<rect class="node node-rss" x="30" y="438" width="180" height="24"/>
+<text class="t-sub" x="120" y="454" text-anchor="middle">📡 MIT Tech Review</text>
+
+<rect class="node node-rss" x="30" y="468" width="180" height="24"/>
+<text class="t-sub" x="120" y="484" text-anchor="middle">📡 OpenAI Blog</text>
+
+<rect class="node node-rss" x="30" y="498" width="180" height="24"/>
+<text class="t-sub" x="120" y="514" text-anchor="middle">📡 Anthropic Blog</text>
+
+<!-- Filter Pipeline -->
+<rect x="232" y="322" width="222" height="210" rx="10" ry="10" fill="rgba(138,32,96,.06)" stroke="#6a1050" stroke-width="1" stroke-dasharray="4 3"/>
+
+<!-- Filter Step 1 -->
+<rect class="node node-filter" x="242" y="334" width="200" height="44"/>
+<text class="t-label" x="342" y="354" text-anchor="middle" font-size="11">🔒 域名白名单</text>
+<text class="t-sub" x="342" y="369" text-anchor="middle">只信任 18 个可信域名</text>
+<text class="t-red" x="342" y="378" text-anchor="middle" font-size="9">techcrunch · theverge · openai · anthropic ...</text>
+
+<!-- Filter Step 2 -->
+<rect class="node node-filter" x="242" y="390" width="200" height="44"/>
+<text class="t-label" x="342" y="410" text-anchor="middle" font-size="11">🔁 difflib 标题去重</text>
+<text class="t-sub" x="342" y="425" text-anchor="middle">相似度 &gt; 60% → 合并</text>
+<text class="t-red" x="342" y="434" text-anchor="middle" font-size="9">~90 条 → ~30 条</text>
+
+<!-- Filter Step 3 -->
+<rect class="node node-filter" x="242" y="446" width="200" height="44"/>
+<text class="t-label" x="342" y="466" text-anchor="middle" font-size="11">✓ 多源计数验证</text>
+<text class="t-sub" x="342" y="481" text-anchor="middle">2+ 来源 → 标注"多源验证"</text>
+<text class="t-red" x="342" y="490" text-anchor="middle" font-size="9">~30 条 → ~17 条高质量</text>
+
+<!-- Filter result -->
+<rect class="badge badge-green" x="242" y="496" width="200" height="20"/>
+<text class="t-green" x="342" y="510" text-anchor="middle" font-size="10" font-weight="700">✅ 最终：~17 条可信新闻</text>
+
+<!-- Translation Node -->
+<rect class="node node-trans" x="494" y="334" width="200" height="80"/>
+<text class="t-label" x="594" y="356" text-anchor="middle">🌐 googletrans</text>
+<text class="t-sub" x="594" y="372" text-anchor="middle">EN → ZH 翻译</text>
+<text class="t-accent" x="594" y="388" text-anchor="middle">title_en → title_zh</text>
+<text class="t-accent" x="594" y="401" text-anchor="middle">summary_en → summary_zh</text>
+<text class="t-sub" x="594" y="416" text-anchor="middle">免费 · 批量处理</text>
+
+<!-- JSON Schema -->
+<rect class="node node-trans" x="494" y="428" width="200" height="80"/>
+<text class="t-label" x="594" y="447" text-anchor="middle" font-size="10">返回 JSON 结构</text>
+<text class="t-code" x="594" y="462" text-anchor="middle">title_zh / title_en</text>
+<text class="t-code" x="594" y="475" text-anchor="middle">summary_zh / summary_en</text>
+<text class="t-code" x="594" y="488" text-anchor="middle">source / link / published_str</text>
+<text class="t-code" x="594" y="501" text-anchor="middle">source_count / credible</text>
+
+<!-- Cache Write -->
+<rect class="node node-cache" x="756" y="352" width="180" height="60"/>
+<text class="t-label" x="846" y="376" text-anchor="middle">💾 写入缓存</text>
+<text class="t-sub" x="846" y="392" text-anchor="middle">dict[key] = data + timestamp</text>
+<text class="t-yellow" x="846" y="405" text-anchor="middle">下次请求命中直接返回</text>
+
+<!-- Arrows in data processing -->
+<!-- RSS → Filter -->
+<line class="arrow-yellow" x1="220" y1="432" x2="240" y2="432"/>
+
+<!-- Filter → Trans -->
+<line class="arrow-accent" x1="454" y1="480" x2="492" y2="480"/>
+
+<!-- Trans → Cache Write -->
+<line class="arrow-green" x1="694" y1="395" x2="754" y2="382"/>
+
+<!-- Cache MISS → RSS pipeline -->
+<line class="arrow-yellow" x1="300" y1="242" x2="120" y2="320" stroke-dasharray="5 3"/>
+<text class="t-yellow" x="190" y="305" text-anchor="middle" font-size="9">缓存 MISS</text>
+
+
+<!-- ══ SECTION: 前端渲染层 ══ -->
+<rect class="section-bg" x="8" y="564" width="1044" height="264"/>
+<text class="section-label" x="24" y="586">前端渲染层 — 用户看到的界面</text>
+
+<!-- Tab 1 box -->
+<rect x="20" y="598" width="360" height="210" rx="10" ry="10" fill="rgba(99,102,241,.05)" stroke="rgba(99,102,241,.3)" stroke-width="1"/>
+<text class="t-accent" x="200" y="617" text-anchor="middle" font-size="12" font-weight="700">📊 Tab 1 — 产品排行</text>
+
+<rect class="node node-products" x="32" y="626" width="164" height="40"/>
+<text class="t-label" x="114" y="643" text-anchor="middle" font-size="11">产品卡片网格</text>
+<text class="t-sub" x="114" y="658" text-anchor="middle">8 类 · S/A/B 评级</text>
+
+<rect class="node node-products" x="204" y="626" width="164" height="40"/>
+<text class="t-label" x="286" y="643" text-anchor="middle" font-size="11">🏷️ NEW 角标</text>
+<text class="t-sub" x="286" y="658" text-anchor="middle">关键词命中 → 动态显示</text>
+
+<rect class="node node-products" x="32" y="676" width="164" height="40"/>
+<text class="t-label" x="114" y="693" text-anchor="middle" font-size="11">📰 相关新闻链接</text>
+<text class="t-sub" x="114" y="708" text-anchor="middle">点击跳转原文</text>
+
+<rect class="node node-products" x="204" y="676" width="164" height="40"/>
+<text class="t-label" x="286" y="693" text-anchor="middle" font-size="11">🧠 层级描述</text>
+<text class="t-sub" x="286" y="708" text-anchor="middle">大模型→对话→编程→Agent</text>
+
+<!-- Tab 2 box -->
+<rect x="400" y="598" width="420" height="210" rx="10" ry="10" fill="rgba(52,211,153,.04)" stroke="rgba(52,211,153,.25)" stroke-width="1"/>
+<text class="t-green" x="610" y="617" text-anchor="middle" font-size="12" font-weight="700">📰 Tab 2 — 今日新闻 + 播报</text>
+
+<rect class="node node-tts" x="412" y="626" width="180" height="40"/>
+<text class="t-label" x="502" y="643" text-anchor="middle" font-size="11">中英双语卡片</text>
+<text class="t-sub" x="502" y="658" text-anchor="middle">中文大标题 + 英文小字</text>
+
+<rect class="node node-tts" x="604" y="626" width="204" height="40"/>
+<text class="t-label" x="706" y="643" text-anchor="middle" font-size="11">▶ 播放控制栏</text>
+<text class="t-sub" x="706" y="658" text-anchor="middle">声音选择 · 语速 · 音调</text>
+
+<rect class="node node-tts" x="412" y="676" width="180" height="40"/>
+<text class="t-label" x="502" y="693" text-anchor="middle" font-size="11">🔵 朗读高亮</text>
+<text class="t-sub" x="502" y="708" text-anchor="middle">当前卡片蓝色高亮+滚动</text>
+
+<rect class="node node-tts" x="604" y="676" width="204" height="40"/>
+<text class="t-label" x="706" y="693" text-anchor="middle" font-size="11">📊 进度条</text>
+<text class="t-sub" x="706" y="708" text-anchor="middle">第 N / 共 17 条</text>
+
+<!-- TTS flow -->
+<rect class="node node-tts" x="412" y="726" width="396" height="32"/>
+<text class="t-green" x="610" y="747" text-anchor="middle" font-size="11">speechSynthesis.speak(utterance) → 系统中文语音输出 🔊</text>
+
+<!-- Arrows from flask back to frontend -->
+<path class="arrow-accent" d="M 140 162 Q 140 136 340 120" stroke="#6366f1"/>
+<text class="t-accent" x="200" y="133" font-size="9">JSON 响应</text>
+
+<path class="arrow-pink" d="M 640 162 Q 640 136 420 120" stroke="#c084fc"/>
+<text class="t-pink" x="570" y="133" font-size="9">产品数据</text>
+
+<!-- From frontend to Tab1/Tab2 (down) -->
+<line class="arrow-accent" x1="280" y1="132" x2="200" y2="596"/>
+<line class="arrow-green" x1="380" y1="132" x2="590" y2="596"/>
+
+<!-- TTS arrow from Tab2 -->
+<line class="arrow-green" x1="610" y1="72" x2="610" y2="598" stroke="#34d399" stroke-dasharray="4 3"/>
+<text class="t-green" x="620" y="390" font-size="9">TTS 触发</text>
+
+
+<!-- ══ LEGEND ══ -->
+<rect x="840" y="598" width="212" height="196" rx="10" ry="10" fill="rgba(255,255,255,.02)" stroke="#27272a" stroke-width="1"/>
+<text class="section-label" x="946" y="617" text-anchor="middle">图例</text>
+<line x1="856" y1="632" x2="890" y2="632" stroke="#3a4560" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+<text class="t-sub" x="900" y="636">普通数据流</text>
+<line x1="856" y1="652" x2="890" y2="652" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowhead-accent)"/>
+<text class="t-accent" x="900" y="656">API 请求/响应</text>
+<line x1="856" y1="672" x2="890" y2="672" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead-green)"/>
+<text class="t-green" x="900" y="676">成功路径</text>
+<line x1="856" y1="692" x2="890" y2="692" stroke="#fbbf24" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arrowhead-yellow)"/>
+<text class="t-yellow" x="900" y="696">缓存 MISS 触发</text>
+<line x1="856" y1="712" x2="890" y2="712" stroke="#c084fc" stroke-width="1.5" marker-end="url(#arrowhead-pink)"/>
+<text class="t-pink" x="900" y="716">产品数据路径</text>
+
+<rect class="badge badge-green" x="856" y="724" width="50" height="16"/>
+<text class="t-green" x="881" y="736" text-anchor="middle" font-size="9">缓存 HIT</text>
+<rect class="badge badge-yellow" x="914" y="724" width="50" height="16"/>
+<text class="t-yellow" x="939" y="736" text-anchor="middle" font-size="9">缓存 MISS</text>
+
+<text class="t-sub" x="946" y="766" text-anchor="middle" font-size="9">⏱ 首次加载 ~15-30s</text>
+<text class="t-green" x="946" y="782" text-anchor="middle" font-size="9">缓存命中后秒速响应</text>
+
+</svg>
+</body>
+</html>
